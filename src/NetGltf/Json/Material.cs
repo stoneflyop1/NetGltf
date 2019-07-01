@@ -28,8 +28,8 @@ namespace NetGltf.Json {
         ///   background using the normal painting operation (i.e. the Porter and
         ///   Duff over operator).
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        [JsonProperty("alphaMode")]
+        [JsonConverter (typeof (StringEnumConverter))]
+        [JsonProperty ("alphaMode")]
         public AlphaMode AlphaMode { get; set; }
         /// <summary>
         /// Specifies whether the material is double-sided.
@@ -42,7 +42,7 @@ namespace NetGltf.Json {
         /// The back-face must have its normals reversed before the lighting
         /// equation is evaluated.
         /// </summary>
-        [JsonProperty("doubleSided")]
+        [JsonProperty ("doubleSided")]
         public bool DoubleSided { get; set; }
     }
 
@@ -69,8 +69,7 @@ namespace NetGltf.Json {
     /// <summary>
     /// The alpha rendering mode of a material.
     /// </summary>
-    public enum AlphaMode
-    {
+    public enum AlphaMode {
         /// The alpha value is ignored and the rendered output is fully opaque.
         OPAQUE = 1,
 

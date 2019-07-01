@@ -1,87 +1,83 @@
 using Newtonsoft.Json;
 
-namespace NetGltf.Json
-{
-    public class Accessor
-    {
-        [JsonProperty("bufferView")]
-        public int BufferViewIndex {get;set;}
+namespace NetGltf.Json {
+    public class Accessor {
+        [JsonProperty ("bufferView")]
+        public int BufferViewIndex { get; set; }
 
-        [JsonProperty("byteOffset")]
-        public int ByteOffset {get;set;}
+        [JsonProperty ("byteOffset")]
+        public int ByteOffset { get; set; }
 
-        [JsonProperty("componentType")]
-        public ComponentType ComponentType {get;set;}
+        [JsonProperty ("componentType")]
+        public ComponentType ComponentType { get; set; }
 
-        [JsonProperty("count")]
-        public int Count {get;set;}
+        [JsonProperty ("count")]
+        public int Count { get; set; }
         /// <summary>
         /// based on ComponentType
         /// </summary>
-        [JsonProperty("min")]
-        public float[] Min {get;set;}
+        [JsonProperty ("min")]
+        public float[] Min { get; set; }
         /// <summary>
         /// based on ComponentType
         /// </summary>
-        [JsonProperty("max")]
-        public float[] Max {get;set;}
+        [JsonProperty ("max")]
+        public float[] Max { get; set; }
 
-        [JsonProperty("type")]
-        public AccessorType AccessorType {get;set;}
+        [JsonProperty ("type")]
+        public AccessorType AccessorType { get; set; }
 
         /// <summary>
         /// for morph targets
         /// </summary>
-        [JsonProperty("sparse")]
-        public SparsedAccessor Sparse {get;set;}
+        [JsonProperty ("sparse")]
+        public SparsedAccessor Sparse { get; set; }
     }
 
-    public class SparsedAccessor
-    {
+    public class SparsedAccessor {
         /// <summary>
         /// number of displaced elements
         /// </summary>
-        [JsonProperty("count")]
-        public int Count {get;set;}
+        [JsonProperty ("count")]
+        public int Count { get; set; }
         /// <summary>
         /// strictly increasing array of integers of size count and 
         /// specific componentType that stores the indices of those elements that 
         /// deviate from the initialization value.
         /// </summary>
-        [JsonProperty("indices")]
-        public SparseIndices Indices {get;set;}
+        [JsonProperty ("indices")]
+        public SparseIndices Indices { get; set; }
 
         /// <summary>
         /// array of displaced elements corresponding to the indices in the indices array
         /// </summary>
-        [JsonProperty("values")]
-        public SparseValues Values {get;set;}
+        [JsonProperty ("values")]
+        public SparseValues Values { get; set; }
 
-        public class SparseValues
-        {
-            [JsonProperty("bufferView")]
-            public int BufferView {get;set;}
+        public class SparseValues {
+            [JsonProperty ("bufferView")]
+            public int BufferView { get; set; }
 
-            [JsonProperty("byteOffset")]
-            public int ByteOffset {get;set;}
+            [JsonProperty ("byteOffset")]
+            public int ByteOffset { get; set; }
         }
 
-        public class SparseIndices
-        {
-            [JsonProperty("bufferView")]
-            public int BufferView {get;set;}
-            [JsonProperty("byteOffset")]
-            public int ByteOffset {get;set;}
-            [JsonProperty("componentType")]
-            public ComponentType ComponentType {get;set;}
+        public class SparseIndices {
+            [JsonProperty ("bufferView")]
+            public int BufferView { get; set; }
+
+            [JsonProperty ("byteOffset")]
+            public int ByteOffset { get; set; }
+
+            [JsonProperty ("componentType")]
+            public ComponentType ComponentType { get; set; }
         }
     }
 
     /// <summary>
     /// Specifies whether an attribute, vector, or matrix.
     /// </summary>
-    public enum AccessorType
-    {
+    public enum AccessorType {
         /// Scalar quantity.
         SCALAR = 1,
 
@@ -107,8 +103,7 @@ namespace NetGltf.Json
     /// <summary>
     /// The component data type.
     /// </summary>
-    public enum ComponentType
-    {
+    public enum ComponentType {
         /// Corresponds to `GL_BYTE`.
         I8 = 5120,
 

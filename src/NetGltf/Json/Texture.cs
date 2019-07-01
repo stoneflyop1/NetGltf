@@ -1,23 +1,21 @@
 using Newtonsoft.Json;
 
-namespace NetGltf.Json
-{
-    public class Texture
-    {
+namespace NetGltf.Json {
+    public class Texture {
         /// <summary>
         /// Optional user-defined name for this object.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty ("name")]
         public string Name { get; set; }
         /// <summary>
         /// The index of the sampler used by this texture.
         /// </summary>
-        [JsonProperty("sampler")]
+        [JsonProperty ("sampler")]
         public int Sampler { get; set; }
         /// <summary>
         /// The index of the image used by this texture.
         /// </summary>
-        [JsonProperty("source")]
+        [JsonProperty ("source")]
         public int Source { get; set; }
     }
 }

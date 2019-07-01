@@ -6,63 +6,63 @@ namespace NetGltf.Json {
         /// <summary>
         /// Optional user-defined name for this object.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty ("name")]
         public string Name { get; set; }
         /// <summary>
         /// Defines the geometry to be renderered with a material.
         /// </summary>
-        [JsonProperty("primitives")]
+        [JsonProperty ("primitives")]
         public List<Primitive> Primitives { get; set; } = new List<Primitive> ();
 
         /// <summary>
         /// Defines the weights to be applied to the morph targets.
         /// </summary>
-        [JsonProperty("weights")]
-        public double[] Weights {get;set;}
+        [JsonProperty ("weights")]
+        public double[] Weights { get; set; }
     }
     public class Primitive {
 
         /// <summary>
         /// Maps attribute semantic names to the `Accessor`s containing the corresponding attribute data.
         /// </summary>
-        [JsonProperty("attributes")]
-        public Dictionary<Semantic, int> Attributes {get;set;}
+        [JsonProperty ("attributes")]
+        public Dictionary<Semantic, int> Attributes { get; set; }
         /// <summary>
         /// The index of the accessor that contains the indices.
         /// </summary>
-        [JsonProperty("indices")]
+        [JsonProperty ("indices")]
         public int? Indices { get; set; }
         /// <summary>
         /// The index of the material to apply to this primitive when rendering
         /// </summary>
-        [JsonProperty("material")]
+        [JsonProperty ("material")]
         public int? Material { get; set; }
         /// <summary>
         /// The type of primitives to render.
         /// </summary>
-        [JsonProperty("mode")]
+        [JsonProperty ("mode")]
         public Mode Mode { get; set; }
 
-        [JsonProperty("targets")]
-        public List<MorphTarget> Targets {get;set;}
+        [JsonProperty ("targets")]
+        public List<MorphTarget> Targets { get; set; }
     }
 
     public class MorphTarget {
         /// <summary>
         /// XYZ vertex position displacements of type `[f32; 3]`.
         /// </summary>
-        [JsonProperty("POSITION")]
-        public int? Positions {get;set;}
+        [JsonProperty ("POSITION")]
+        public int? Positions { get; set; }
         /// <summary>
         /// YZ vertex normal displacements of type `[f32; 3]`.
         /// </summary>
-        [JsonProperty("NORMAL")]
-        public int? Normals {get;set;}
+        [JsonProperty ("NORMAL")]
+        public int? Normals { get; set; }
         /// <summary>
         /// XYZ vertex tangent displacements of type `[f32; 3]`.
         /// </summary>
-        [JsonProperty("TANGENT")]
-        public int? Tangents {get;set;}
+        [JsonProperty ("TANGENT")]
+        public int? Tangents { get; set; }
     }
 
     /// <summary>
@@ -91,8 +91,7 @@ namespace NetGltf.Json {
         TriangleFan,
     }
 
-    public enum Semantic
-    {
+    public enum Semantic {
         ///<summary>XYZ vertex positions</summary>
         POSITION,
         ///<summary>Normalized XYZ vertex normals</summary>
