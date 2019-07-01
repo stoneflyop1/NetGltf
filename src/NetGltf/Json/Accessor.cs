@@ -14,14 +14,16 @@ namespace NetGltf.Json {
         [JsonProperty ("count")]
         public int Count { get; set; }
         /// <summary>
-        /// based on ComponentType
+        /// based on ComponentType, float or int
         /// </summary>
         [JsonProperty ("min")]
+        [JsonConverter(typeof(FloatArrayJsonConverter))]
         public float[] Min { get; set; }
         /// <summary>
-        /// based on ComponentType
+        /// based on ComponentType, float or int
         /// </summary>
         [JsonProperty ("max")]
+        [JsonConverter(typeof(FloatArrayJsonConverter))]
         public float[] Max { get; set; }
 
         [JsonProperty ("type")]
