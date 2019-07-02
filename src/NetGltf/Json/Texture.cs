@@ -11,11 +11,23 @@ namespace NetGltf.Json {
         /// The index of the sampler used by this texture.
         /// </summary>
         [JsonProperty ("sampler")]
-        public int Sampler { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Sampler> Sampler { get; set; }
         /// <summary>
         /// The index of the image used by this texture.
         /// </summary>
         [JsonProperty ("source")]
-        public int Source { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Image> Source { get; set; }
+    }
+
+    public class TextureInfo
+    {
+        [JsonProperty("index")]
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Texture> Index {get;set;}
+
+        [JsonProperty("tex_coord")]
+        public int TexCoord {get;set;}
     }
 }

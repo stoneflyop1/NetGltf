@@ -31,12 +31,14 @@ namespace NetGltf.Json {
         /// The index of the accessor that contains the indices.
         /// </summary>
         [JsonProperty ("indices")]
-        public int? Indices { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Accessor> Indices { get; set; }
         /// <summary>
         /// The index of the material to apply to this primitive when rendering
         /// </summary>
         [JsonProperty ("material")]
-        public int? Material { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Material> Material { get; set; }
         /// <summary>
         /// The type of primitives to render.
         /// </summary>
@@ -52,17 +54,20 @@ namespace NetGltf.Json {
         /// XYZ vertex position displacements of type `[f32; 3]`.
         /// </summary>
         [JsonProperty ("POSITION")]
-        public int? Positions { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Accessor> Positions { get; set; }
         /// <summary>
         /// YZ vertex normal displacements of type `[f32; 3]`.
         /// </summary>
         [JsonProperty ("NORMAL")]
-        public int? Normals { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Accessor> Normals { get; set; }
         /// <summary>
         /// XYZ vertex tangent displacements of type `[f32; 3]`.
         /// </summary>
         [JsonProperty ("TANGENT")]
-        public int? Tangents { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Accessor> Tangents { get; set; }
     }
 
     /// <summary>

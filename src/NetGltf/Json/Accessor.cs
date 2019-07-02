@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NetGltf.Json {
     public class Accessor {
@@ -27,6 +28,7 @@ namespace NetGltf.Json {
         public float[] Max { get; set; }
 
         [JsonProperty ("type")]
+        [JsonConverter (typeof (StringEnumConverter))]
         public AccessorType AccessorType { get; set; }
 
         /// <summary>
@@ -57,16 +59,18 @@ namespace NetGltf.Json {
         public SparseValues Values { get; set; }
 
         public class SparseValues {
+            [JsonConverter(typeof(IndexConverter))]
             [JsonProperty ("bufferView")]
-            public int BufferView { get; set; }
+            public Index<BufferView> BufferView { get; set; }
 
             [JsonProperty ("byteOffset")]
             public int ByteOffset { get; set; }
         }
 
         public class SparseIndices {
+            [JsonConverter(typeof(IndexConverter))]
             [JsonProperty ("bufferView")]
-            public int BufferView { get; set; }
+            public Index<BufferView> BufferView { get; set; }
 
             [JsonProperty ("byteOffset")]
             public int ByteOffset { get; set; }

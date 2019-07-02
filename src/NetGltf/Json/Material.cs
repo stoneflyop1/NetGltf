@@ -30,7 +30,7 @@ namespace NetGltf.Json {
         /// </summary>
         [JsonConverter (typeof (StringEnumConverter))]
         [JsonProperty ("alphaMode")]
-        public AlphaMode AlphaMode { get; set; }
+        public AlphaMode AlphaMode { get; set; } = AlphaMode.OPAQUE;
         /// <summary>
         /// Specifies whether the material is double-sided.
         ///
@@ -53,6 +53,9 @@ namespace NetGltf.Json {
         [JsonProperty ("baseColorFactor")]
         public float[] BaseColor { get; set; }
 
+        [JsonProperty("baseColorTexture")]
+        public TextureInfo BaseColorTexture {get;set;}
+
         /// <summary>
         /// The metalness of the material
         /// </summary>
@@ -63,7 +66,7 @@ namespace NetGltf.Json {
         /// The roughness of the material
         /// </summary>
         [JsonProperty ("roughnessFactor")]
-        public float Roughness { get; set; }
+        public float Roughness { get; set; } = 1.0f;
     }
 
     /// <summary>

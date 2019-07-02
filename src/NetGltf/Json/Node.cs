@@ -7,10 +7,11 @@ namespace NetGltf.Json {
         public string Name { get; set; }
 
         [JsonProperty ("children")]
-        public List<int> ChildrenIndices { get; } = new List<int> ();
+        public List<int> ChildrenIndices { get; set; }
 
         [JsonProperty ("mesh")]
-        public int? Mesh { get; set; }
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Mesh> Mesh { get; set; }
 
         [JsonProperty ("weights")]
         public float[] Weights { get; set; }

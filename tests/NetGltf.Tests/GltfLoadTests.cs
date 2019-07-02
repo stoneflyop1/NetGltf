@@ -18,6 +18,9 @@ namespace NetGltf.Tests {
             var content = File.ReadAllText (gltfFile);
             var model = JsonConvert.DeserializeObject<Model> (content);
             Assert.True (model.Scenes.Count > 0);
+            var str = JsonConvert.SerializeObject(model, new JsonSerializerSettings{NullValueHandling = NullValueHandling.Ignore});
+            var path = Path.GetFullPath("test.gltf");
+            File.WriteAllText(path, str);
         }
     }
 }
