@@ -7,6 +7,6 @@ namespace NetGltf.Json {
         public string Name { get; set; }
 
         [JsonProperty ("nodes")]
-        public List<int> NodeIndices { get; } = new List<int> ();
+        public List<Index<Node>> NodeIndices { get; set; }
     }
 }

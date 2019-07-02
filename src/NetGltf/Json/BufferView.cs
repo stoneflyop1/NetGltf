@@ -36,6 +36,6 @@ namespace NetGltf.Json {
         /// otherwise it could be inferred from mesh' accessor objects.
         /// </summary>
         [JsonProperty ("target")]
-        public int Target { get; set; }
+        public int? Target { get; set; }
     }
 }

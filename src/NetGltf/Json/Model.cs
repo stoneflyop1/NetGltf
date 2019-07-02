@@ -21,6 +21,9 @@ namespace NetGltf.Json {
         [JsonProperty ("nodes")]
         public List<Node> Nodes { get; set; } = new List<Node> ();
 
+        [JsonProperty("skins")]
+        public List<Skin> Skins {get;set;} = new List<Skin>();
+
         [JsonProperty ("scenes")]
         public List<Scene> Scenes { get; set; } = new List<Scene> ();
 

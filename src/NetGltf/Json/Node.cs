@@ -7,17 +7,19 @@ namespace NetGltf.Json {
         public string Name { get; set; }
 
         [JsonProperty ("children")]
-        public List<int> ChildrenIndices { get; set; }
+        public List<Index<Node>> ChildrenIndices { get; set; }
 
         [JsonProperty ("mesh")]
         [JsonConverter(typeof(IndexConverter))]
         public Index<Mesh> Mesh { get; set; }
 
+        [JsonProperty("skin")]
+        [JsonConverter(typeof(IndexConverter))]
+        public Index<Skin> Skin {get;set;}
+
         [JsonProperty ("weights")]
         public float[] Weights { get; set; }
-    }
 
-    public class MatrixNode : Node {
         [JsonProperty ("camera")]
         public int? Camera { get; set; }
         /// <summary>
@@ -26,9 +28,7 @@ namespace NetGltf.Json {
         /// <value></value>
         [JsonProperty ("matrix")]
         public float[] Matrix { get; set; }
-    }
 
-    public class RstNode : Node {
         /// <summary>
         /// float[4]
         /// </summary>
@@ -47,5 +47,7 @@ namespace NetGltf.Json {
         /// <value></value>
         [JsonProperty ("translation")]
         public float[] Translation { get; set; }
+
     }
+
 }
