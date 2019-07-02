@@ -10,11 +10,9 @@ namespace NetGltf.Json {
         public List<Index<Node>> ChildrenIndices { get; set; }
 
         [JsonProperty ("mesh")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Mesh> Mesh { get; set; }
 
         [JsonProperty("skin")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Skin> Skin {get;set;}
 
         [JsonProperty ("weights")]

@@ -10,7 +10,6 @@ namespace NetGltf.Json {
         public string Uri { get; set; }
 
         [JsonProperty ("bufferView")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<BufferView> BufferView { get; set; }
 
         [JsonProperty ("mimeType")]

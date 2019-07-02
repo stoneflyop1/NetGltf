@@ -27,7 +27,6 @@ namespace NetGltf.Json {
         [JsonProperty ("scenes")]
         public List<Scene> Scenes { get; set; } = new List<Scene> ();
 
-        [JsonConverter(typeof(IndexConverter))]
         [JsonProperty ("scene")]
         public Index<Scene> Scene { get; set; }
 

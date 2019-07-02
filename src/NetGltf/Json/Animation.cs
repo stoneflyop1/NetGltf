@@ -23,7 +23,6 @@ namespace NetGltf.Json
         /// The index of a sampler in this animation used to compute the value for the target
         /// </summary>
         [JsonProperty("sampler")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<AnimationSampler> Sampler {get;set;}
         /// <summary>
         /// The index of the node and TRS property to target.
@@ -39,7 +38,6 @@ namespace NetGltf.Json
         /// The index of the node to target.
         /// </summary>
         [JsonProperty("node")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Node> Node {get;set;}
         /// <summary>
         /// The name of the node's property to modify or the 'weights' of the
@@ -117,13 +115,11 @@ namespace NetGltf.Json
         /// The index of an accessor containing keyframe input values, e.g., time.
         /// </summary>
         [JsonProperty("input")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Accessor> Input {get;set;}
         /// <summary>
         /// The index of an accessor containing keyframe output values.
         /// </summary>
         [JsonProperty("output")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Accessor> Output {get;set;}
 
         [JsonProperty("interpolation")]

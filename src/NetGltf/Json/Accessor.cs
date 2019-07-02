@@ -59,7 +59,6 @@ namespace NetGltf.Json {
         public SparseValues Values { get; set; }
 
         public class SparseValues {
-            [JsonConverter(typeof(IndexConverter))]
             [JsonProperty ("bufferView")]
             public Index<BufferView> BufferView { get; set; }
 
@@ -68,7 +67,6 @@ namespace NetGltf.Json {
         }
 
         public class SparseIndices {
-            [JsonConverter(typeof(IndexConverter))]
             [JsonProperty ("bufferView")]
             public Index<BufferView> BufferView { get; set; }
 

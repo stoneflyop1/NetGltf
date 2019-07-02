@@ -15,7 +15,6 @@ namespace NetGltf.Json
         /// which implies that the inverse-bind matrices were pre-applied.
         /// </summary>
         [JsonProperty("inverseBindMatrices")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Accessor> InverseBindMatrices {get;set;}
         /// <summary>
         /// The array length must be the same as the `count` property of the
@@ -29,7 +28,6 @@ namespace NetGltf.Json
         /// When `None`, joints transforms resolve to scene root.
         /// </summary>
         [JsonProperty("skeleton")]
-        [JsonConverter(typeof(IndexConverter))]
         public Index<Node> Skeleton {get;set;}
     }
 }
