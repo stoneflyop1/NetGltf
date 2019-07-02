@@ -20,6 +20,7 @@ namespace NetGltf.Tests {
             Assert.True (model.Scenes.Count > 0);
             var str = JsonConvert.SerializeObject(model, new JsonSerializerSettings{
                 NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new ArrayContractResolver(),
                 Converters = new JsonConverter[]{new IndexConverter()}});
             var path = Path.GetFullPath("test.gltf");
             File.WriteAllText(path, str);

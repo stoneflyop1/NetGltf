@@ -7,6 +7,11 @@ namespace NetGltf.Json
     {
         public int Value {get;set;}
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         public static implicit operator int(Index<T> index) {
             return index.Value;
         }

@@ -43,6 +43,6 @@ namespace NetGltf.Json {
         public List<Image> Images { get; set; } = new List<Image> ();
 
         [JsonProperty("animations")]
-        public List<Animation> Animations {get;set;}
+        public List<Animation> Animations {get;set;} = new List<Animation>();
     }
 }
