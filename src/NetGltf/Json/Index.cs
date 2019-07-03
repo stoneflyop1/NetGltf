@@ -5,23 +5,26 @@ namespace NetGltf.Json
 {
     public class Index<T>
     {
-        public int Value {get;set;}
+        public int Value { get; set; }
 
         public override string ToString()
         {
             return Value.ToString();
         }
 
-        public static implicit operator int(Index<T> index) {
+        public static implicit operator int(Index<T> index)
+        {
             return index.Value;
         }
 
-        public static implicit operator Index<T>(int val) {
-            return new Index<T>{Value = val};
+        public static implicit operator Index<T>(int val)
+        {
+            return new Index<T> { Value = val };
         }
 
-        public static implicit operator Index<T>(long val) {
-            return new Index<T>{Value = (int)val};
+        public static implicit operator Index<T>(long val)
+        {
+            return new Index<T> { Value = (int)val };
         }
     }
 
@@ -30,20 +33,23 @@ namespace NetGltf.Json
         public override bool CanConvert(Type objectType)
         {
             var indexType = typeof(Index<>);
-            return objectType.Name == indexType.Name && 
+            return objectType.Name == indexType.Name &&
                 objectType.Namespace == indexType.Namespace;
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, 
+            object existingValue, JsonSerializer serializer)
         {
             var rawVal = reader.Value;
             int? val = null;
-            if (rawVal is int || rawVal is long) {
+            if (rawVal is int || rawVal is long)
+            {
                 val = Convert.ToInt32(rawVal);
             }
-            else {
+            else
+            {
                 val = reader.ReadAsInt32();
-            }            
+            }
             if (val != null)
             {
                 dynamic inst = Activator.CreateInstance(objectType);

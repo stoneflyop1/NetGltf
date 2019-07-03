@@ -8,13 +8,13 @@ namespace NetGltf.Json
     {
 
         [JsonProperty("name")]
-        public string Name {get;set;}
+        public string Name { get; set; }
 
         [JsonProperty("channels")]
-        public List<Channel> Channels {get;set;}
+        public List<Channel> Channels { get; set; }
 
         [JsonProperty("samplers")]
-        public List<AnimationSampler> Samplers {get;set;}
+        public List<AnimationSampler> Samplers { get; set; }
     }
 
     public class Channel
@@ -23,29 +23,30 @@ namespace NetGltf.Json
         /// The index of a sampler in this animation used to compute the value for the target
         /// </summary>
         [JsonProperty("sampler")]
-        public Index<AnimationSampler> Sampler {get;set;}
+        public Index<AnimationSampler> Sampler { get; set; }
         /// <summary>
         /// The index of the node and TRS property to target.
         /// </summary>
         [JsonProperty("target")]
-        public Target Target {get;set;}
+        public Target Target { get; set; }
 
     }
 
-    public class Target{
+    public class Target
+    {
 
         /// <summary>
         /// The index of the node to target.
         /// </summary>
         [JsonProperty("node")]
-        public Index<Node> Node {get;set;}
+        public Index<Node> Node { get; set; }
         /// <summary>
         /// The name of the node's property to modify or the 'weights' of the
         /// morph targets it instantiates.
         /// </summary>
         [JsonProperty("path")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public TargetProperty Path {get;set;}
+        public TargetProperty Path { get; set; }
     }
 
     public enum TargetProperty
@@ -96,7 +97,7 @@ namespace NetGltf.Json
         /// tangents of the spline. There must be at least four keyframes when using this
         /// interpolation.
         /// </summary>
-        CATMULLROMSPLINE,        //CatmullRomSpline,
+        CATMULLROMSPLINE, //CatmullRomSpline,
         /// <summary>
         /// Cubic spline interpolation.
         ///
@@ -115,15 +116,15 @@ namespace NetGltf.Json
         /// The index of an accessor containing keyframe input values, e.g., time.
         /// </summary>
         [JsonProperty("input")]
-        public Index<Accessor> Input {get;set;}
+        public Index<Accessor> Input { get; set; }
         /// <summary>
         /// The index of an accessor containing keyframe output values.
         /// </summary>
         [JsonProperty("output")]
-        public Index<Accessor> Output {get;set;}
+        public Index<Accessor> Output { get; set; }
 
         [JsonProperty("interpolation")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public Interpolation Interpolation {get;set;} = Interpolation.LINEAR;
+        public Interpolation Interpolation { get; set; } = Interpolation.LINEAR;
     }
 }

@@ -1,13 +1,15 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace NetGltf.Json {
-    public class Material {
+namespace NetGltf.Json
+{
+    public class Material
+    {
 
-        [JsonProperty ("name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty ("pbrMetallicRoughness")]
+        [JsonProperty("pbrMetallicRoughness")]
         public PbrMetallicRoughness Pbr { get; set; }
 
         /// <summary>
@@ -28,8 +30,8 @@ namespace NetGltf.Json {
         ///   background using the normal painting operation (i.e. the Porter and
         ///   Duff over operator).
         /// </summary>
-        [JsonConverter (typeof (StringEnumConverter))]
-        [JsonProperty ("alphaMode")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("alphaMode")]
         public AlphaMode AlphaMode { get; set; } = AlphaMode.OPAQUE;
         /// <summary>
         /// Specifies whether the material is double-sided.
@@ -42,37 +44,39 @@ namespace NetGltf.Json {
         /// The back-face must have its normals reversed before the lighting
         /// equation is evaluated.
         /// </summary>
-        [JsonProperty ("doubleSided")]
+        [JsonProperty("doubleSided")]
         public bool DoubleSided { get; set; }
     }
 
-    public class PbrMetallicRoughness {
+    public class PbrMetallicRoughness
+    {
         /// <summary>
         /// The base color of the material
         /// </summary>
-        [JsonProperty ("baseColorFactor")]
+        [JsonProperty("baseColorFactor")]
         public float[] BaseColor { get; set; }
 
         [JsonProperty("baseColorTexture")]
-        public TextureInfo BaseColorTexture {get;set;}
+        public TextureInfo BaseColorTexture { get; set; }
 
         /// <summary>
         /// The metalness of the material
         /// </summary>
-        [JsonProperty ("metallicFactor")]
+        [JsonProperty("metallicFactor")]
         public float Metallic { get; set; }
 
         /// <summary>
         /// The roughness of the material
         /// </summary>
-        [JsonProperty ("roughnessFactor")]
+        [JsonProperty("roughnessFactor")]
         public float Roughness { get; set; } = 1.0f;
     }
 
     /// <summary>
     /// The alpha rendering mode of a material.
     /// </summary>
-    public enum AlphaMode {
+    public enum AlphaMode
+    {
         /// The alpha value is ignored and the rendered output is fully opaque.
         OPAQUE = 1,
 

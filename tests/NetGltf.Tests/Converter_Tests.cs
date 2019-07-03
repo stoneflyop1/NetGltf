@@ -1,6 +1,6 @@
-using Xunit;
-using Newtonsoft.Json;
 using NetGltf.Json;
+using Newtonsoft.Json;
+using Xunit;
 
 namespace NetGltf.Tests
 {
@@ -9,7 +9,7 @@ namespace NetGltf.Tests
         [Fact]
         public void FloatArrayConverter_Tests()
         {
-            var arr = new[] {1.0f,2.0f};
+            var arr = new[] { 1.0f, 2.0f };
             var str = JsonConvert.SerializeObject(arr, new FloatArrayJsonConverter());
             Assert.Equal("[1,2]", str);
             var arr2 = JsonConvert.DeserializeObject<float[]>(str, new FloatArrayJsonConverter());
@@ -25,8 +25,9 @@ namespace NetGltf.Tests
             // var str = JsonConvert.SerializeObject(index, new IndexConverter());
             // Assert.Equal("1", str);
 
-            var ti = new TestIndex{
-                Scene = new Index<Scene>{Value = 1}
+            var ti = new TestIndex
+            {
+                Scene = new Index<Scene> { Value = 1 }
             };
             var str2 = JsonConvert.SerializeObject(ti, Formatting.None);
             Assert.Equal("{\"scene\":1}", str2);
@@ -38,8 +39,8 @@ namespace NetGltf.Tests
         public class TestIndex
         {
             [JsonProperty("scene")]
-            [JsonConverter(typeof(IndexConverter))]            
-            public Index<Scene> Scene {get;set;}
+            [JsonConverter(typeof(IndexConverter))]
+            public Index<Scene> Scene { get; set; }
         }
     }
 }

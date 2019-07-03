@@ -1,49 +1,47 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace NetGltf.Json {
-    public class Node {
-        [JsonProperty ("name")]
+namespace NetGltf.Json
+{
+    public class Node
+    {
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty ("children")]
+        [JsonProperty("children")]
         public List<Index<Node>> ChildrenIndices { get; set; } = new List<Index<Node>>();
 
-        [JsonProperty ("mesh")]
+        [JsonProperty("mesh")]
         public Index<Mesh> Mesh { get; set; }
 
         [JsonProperty("skin")]
-        public Index<Skin> Skin {get;set;}
+        public Index<Skin> Skin { get; set; }
 
-        [JsonProperty ("weights")]
+        [JsonProperty("weights")]
         public float[] Weights { get; set; }
 
-        [JsonProperty ("camera")]
+        [JsonProperty("camera")]
         public int? Camera { get; set; }
         /// <summary>
         /// float[16]
         /// </summary>
-        /// <value></value>
-        [JsonProperty ("matrix")]
+        [JsonProperty("matrix")]
         public float[] Matrix { get; set; }
 
         /// <summary>
         /// float[4]
         /// </summary>
-        /// <value></value>
-        [JsonProperty ("rotation")]
+        [JsonProperty("rotation")]
         public float[] Rotation { get; set; }
         /// <summary>
         /// float[3]
         /// </summary>
-        /// <value></value>
-        [JsonProperty ("scale")]
+        [JsonProperty("scale")]
         public float[] Scale { get; set; }
         /// <summary>
         /// float[3]
         /// </summary>
-        /// <value></value>
-        [JsonProperty ("translation")]
+        [JsonProperty("translation")]
         public float[] Translation { get; set; }
 
     }
