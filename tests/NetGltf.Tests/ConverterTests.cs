@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NetGltf.Tests
 {
-    public class Converter_Tests
+    public class ConverterTests
     {
         [Fact]
         public void FloatArrayConverter_Tests()

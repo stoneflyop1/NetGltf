@@ -49,5 +49,23 @@ namespace NetGltf.Tests
             var path = Path.GetFullPath("testdoc.gltf");
             doc.WriteModel(model, path);
         }
+
+        [Fact]
+        public void LoadDoc_Test2()
+        {
+            var rootPath = Path.GetFullPath(SampleRootPath);
+            var gltfFile = Path.Combine(rootPath, "sepbins/CesiumMan/CesiumMan.gltf");
+            var doc = Document.FromPath(gltfFile);
+            var res = doc.Parse();
+            Assert.NotNull(res.Data);
+            var model = res.Data;
+            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var sceneIndex = model.Scene;
+            Assert.Null(res.Error);
+            var testDir = "test2";
+            if (!Directory.Exists(testDir)) Directory.CreateDirectory(testDir);
+            var path = Path.GetFullPath(testDir+"/testdoc.gltf");
+            doc.WriteModel(model, path);
+        }
     }
 }

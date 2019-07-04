@@ -8,6 +8,8 @@ namespace NetGltf.Json
     /// </summary>
     public class Model
     {
+        [JsonIgnore]
+        public string Uri {get;set;}
         [JsonProperty("asset")]
         public Asset Asset { get; set; }
 
