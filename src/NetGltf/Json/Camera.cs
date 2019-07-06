@@ -15,6 +15,7 @@ namespace NetGltf.Json
         /// Specifies if the camera uses a perspective or orthographic projection.
         /// </summary>
         [JsonProperty("type")]
+        [JsonConverter(typeof(StringEnumConverter), true)]
         public CameraType CameraType {get;set;}
 
         /// <summary>
@@ -34,10 +35,8 @@ namespace NetGltf.Json
     {
         // https://bytefish.de/blog/enums_json_net/
         /// <summary>A perspective projection.</summary>
-        [JsonProperty("perspective", ItemConverterType = typeof(StringEnumConverter))]
         Perspective,
         /// <summary>A orthographic projection.</summary>
-        [JsonProperty("orthographic", ItemConverterType = typeof(StringEnumConverter))]
         Orthographic
     }
 

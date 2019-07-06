@@ -67,5 +67,21 @@ namespace NetGltf.Tests
             var path = Path.GetFullPath(testDir+"/testdoc.gltf");
             doc.WriteModel(model, path);
         }
+
+        [Fact]
+        public void LoadCameras_Test2()
+        {
+            var rootPath = Path.GetFullPath(SampleRootPath);
+            var gltfFile = Path.Combine(rootPath, "Cameras.gltf");
+            var doc = Document.FromPath(gltfFile);
+            var res = doc.Parse();
+            Assert.NotNull(res.Data);
+            var model = res.Data;
+            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var sceneIndex = model.Scene;
+            Assert.Null(res.Error);
+            var path = Path.GetFullPath("testcameras.gltf");
+            doc.WriteModel(model, path);
+        }
     }
 }
