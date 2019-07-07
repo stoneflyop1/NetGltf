@@ -12,7 +12,7 @@ namespace NetGltf.Tests
         /// <summary>
         /// relative to bin/Debug/netcoreapp2.2
         /// </summary>
-        private static readonly string SampleRootPath = @"../../../../../gltfsamples";
+        internal static readonly string SampleRootPath = @"../../../../../gltfsamples";
 
         [Fact]
         public void LoadGltf_Test()

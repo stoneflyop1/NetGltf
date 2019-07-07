@@ -3,28 +3,28 @@ using NetGltf.Json;
 
 namespace NetGltf
 {
-    public class GltfResult
+    public class GltfResult<T>
     {
-        public Model Data { get; internal set; }
+        public T Data { get; internal set; }
 
         public Exception Error { get; internal set; }
     }
 
     public static class Result
     {
-        public static GltfResult Error(Exception ex)
+        public static GltfResult<T> Error<T>(Exception ex)
         {
             if (ex == null) throw new ArgumentNullException(nameof(ex));
-            return new GltfResult
+            return new GltfResult<T>
             {
                 Error = ex
             };
         }
 
-        public static GltfResult Ok(Model data)
+        public static GltfResult<T> Ok<T>(T data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
-            return new GltfResult
+            return new GltfResult<T>
             {
                 Data = data
             };

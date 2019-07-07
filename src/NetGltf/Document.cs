@@ -40,7 +40,7 @@ namespace NetGltf
 
         private readonly JsonSerializer _serializer;
 
-        public GltfResult Parse()
+        public GltfResult<Model> Parse()
         {
             try
             {
@@ -54,7 +54,7 @@ namespace NetGltf
             }
             catch (System.Exception ex)
             {
-                return Result.Error(ex);
+                return Result.Error<Model>(ex);
             }
         }
 
