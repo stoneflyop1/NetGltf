@@ -67,9 +67,12 @@ namespace NetGltf.Json
 
         /// <summary>
         /// The roughness of the material
+        /// 
+        /// * A value of 1.0 means the material is completely rough.
+        /// * A value of 0.0 means the material is completely smooth.
         /// </summary>
         [JsonProperty("roughnessFactor")]
-        public float Roughness { get; set; } = 1.0f;
+        public float? Roughness { get; set; }
     }
 
     /// <summary>

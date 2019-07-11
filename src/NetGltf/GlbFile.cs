@@ -1,4 +1,8 @@
+using System;
 using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using NetGltf.Json;
 
 namespace NetGltf
 {
@@ -44,10 +48,40 @@ namespace NetGltf
                 var binLen = glbLen - cHeader.Length;
                 if (binLen > 0)
                 {
-                    gFile.Bin = br.ReadBytes((int)binLen);
+                    var bHeaderRes = ChunkHeader.Parse(br);
+                    if (bHeaderRes.Error != null)
+                    {
+                        return Result.Error<GlbFile>(bHeaderRes.Error);
+                    }
+                    var bHeader = bHeaderRes.Data;
+                    if (bHeader.ChunkType != ChunkType.Bin)
+                    {
+                        return Result.Error<GlbFile>(new GltfException(
+                            new[] {new GltfError{Kind = ErrorKind.Glb, Message = "Must be Bin Chunk after Json Chunk"}}
+                        ));
+                    }
+                    gFile.Bin = br.ReadBytes((int)bHeader.Length);
                 }
                 return Result.Ok(gFile);
             }
+        }
+    }
+
+    public static class GltfFileExtensions
+    {
+        public static Model ToGltf(this GlbFile glb)
+        {
+            if (glb == null) throw new ArgumentNullException(nameof(glb));
+
+            var json = Encoding.UTF8.GetString(glb.Json);
+            var model = Util.DeserializeString<Model>(json);
+            if (glb.Bin != null && glb.Bin.Length > 0)
+            {
+                model.Buffers[0].Uri = 
+                    "data:application/octet-stream;base64," + Convert.ToBase64String(glb.Bin);
+                //data:application/octet-stream;base64,
+            }
+            return model;
         }
     }
 

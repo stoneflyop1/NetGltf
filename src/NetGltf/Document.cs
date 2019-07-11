@@ -44,13 +44,16 @@ namespace NetGltf
         {
             try
             {
-                using (var sr = new StreamReader(_filePath))
-                using (var jsonReader = new JsonTextReader(sr))
-                {
-                    var model = _serializer.Deserialize<Model>(jsonReader);
-                    model.Uri = _filePath;
-                    return Result.Ok(model);
-                }
+                var model = Util.Deserialize<Model>(_filePath);
+                model.Uri = _filePath;
+                return Result.Ok(model);
+                // using (var sr = new StreamReader(_filePath))
+                // using (var jsonReader = new JsonTextReader(sr))
+                // {
+                //     var model = _serializer.Deserialize<Model>(jsonReader);
+                //     model.Uri = _filePath;
+                //     return Result.Ok(model);
+                // }
             }
             catch (System.Exception ex)
             {
@@ -96,11 +99,12 @@ namespace NetGltf
         public void WriteModel(Model model, string filePath)
         {
             WriteUriFiles(model, filePath);
-            using (var sw = new StreamWriter(filePath))
-            {
-                _serializer.Serialize(sw, model);
-                sw.Flush();
-            }
+            Util.Serialize(model, filePath);
+            // using (var sw = new StreamWriter(filePath))
+            // {
+            //     _serializer.Serialize(sw, model);
+            //     sw.Flush();
+            // }
         }
     }
 }

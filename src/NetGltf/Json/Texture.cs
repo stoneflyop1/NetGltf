@@ -27,6 +27,6 @@ namespace NetGltf.Json
         public Index<Texture> Index { get; set; }
 
         [JsonProperty("tex_coord")]
-        public int TexCoord { get; set; }
+        public int? TexCoord { get; set; }
     }
 }
