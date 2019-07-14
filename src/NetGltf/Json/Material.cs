@@ -10,7 +10,7 @@ namespace NetGltf.Json
         public string Name { get; set; }
 
         [JsonProperty("pbrMetallicRoughness")]
-        public PbrMetallicRoughness Pbr { get; set; }
+        public PbrMetallicRoughness PbrMetallicRoughness { get; set; }
 
         /// <summary>
         /// The alpha rendering mode of the material.
@@ -54,7 +54,7 @@ namespace NetGltf.Json
         /// The base color of the material
         /// </summary>
         [JsonProperty("baseColorFactor")]
-        public float[] BaseColor { get; set; }
+        public float[] BaseColorFactor { get; set; }
 
         [JsonProperty("baseColorTexture")]
         public TextureInfo BaseColorTexture { get; set; }
@@ -63,7 +63,7 @@ namespace NetGltf.Json
         /// The metalness of the material
         /// </summary>
         [JsonProperty("metallicFactor")]
-        public float Metallic { get; set; }
+        public float MetallicFactor { get; set; }
 
         /// <summary>
         /// The roughness of the material
@@ -72,7 +72,7 @@ namespace NetGltf.Json
         /// * A value of 0.0 means the material is completely smooth.
         /// </summary>
         [JsonProperty("roughnessFactor")]
-        public float? Roughness { get; set; }
+        public float? RoughnessFactor { get; set; }
     }
 
     /// <summary>

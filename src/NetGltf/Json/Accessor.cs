@@ -6,7 +6,7 @@ namespace NetGltf.Json
     public class Accessor
     {
         [JsonProperty("bufferView")]
-        public int BufferViewIndex { get; set; }
+        public Index<BufferView> BufferView { get; set; }
 
         [JsonProperty("byteOffset")]
         public int ByteOffset { get; set; }

@@ -21,7 +21,7 @@ namespace NetGltf.Tests
             var gltfFile = Path.Combine(rootPath, "CesiumMan.gltf");
             var content = File.ReadAllText(gltfFile);
             var model = JsonConvert.DeserializeObject<Model>(content);
-            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.True(model.Scenes.Count > 0);
             var str = JsonConvert.SerializeObject(model, new JsonSerializerSettings
@@ -43,7 +43,7 @@ namespace NetGltf.Tests
             var res = doc.Parse();
             Assert.NotNull(res.Data);
             var model = res.Data;
-            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.Null(res.Error);
             var path = Path.GetFullPath("testdoc.gltf");
@@ -59,7 +59,7 @@ namespace NetGltf.Tests
             var res = doc.Parse();
             Assert.NotNull(res.Data);
             var model = res.Data;
-            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.Null(res.Error);
             var testDir = "test2";
@@ -77,7 +77,7 @@ namespace NetGltf.Tests
             var res = doc.Parse();
             Assert.NotNull(res.Data);
             var model = res.Data;
-            var node = model.Nodes.FirstOrDefault(c => c.ChildrenIndices.Count > 0);
+            var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.Null(res.Error);
             var path = Path.GetFullPath("testcameras.gltf");

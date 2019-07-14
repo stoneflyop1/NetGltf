@@ -13,12 +13,12 @@ namespace NetGltf.Json
         /// The parent `Buffer`.
         /// </summary>
         [JsonProperty("buffer")]
-        public Index<Buffer> BufferIndex { get; set; }
+        public Index<Buffer> Buffer{ get; set; }
         /// <summary>
         /// The length of the `BufferView` in bytes.
         /// </summary>
         [JsonProperty("byteLength")]
-        public int Bytes { get; set; }
+        public int ByteLength { get; set; }
         /// <summary>
         /// Offset into the parent buffer in bytes.
         /// </summary>

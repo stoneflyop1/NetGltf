@@ -45,7 +45,7 @@ namespace NetGltf.Json
         /// morph targets it instantiates.
         /// </summary>
         [JsonProperty("path")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter), true)]
         public TargetProperty Path { get; set; }
     }
 
@@ -54,19 +54,19 @@ namespace NetGltf.Json
         /// <summary>
         /// XYZ translation vector, VEC3
         /// </summary>
-        translation,
+        Translation,
         /// <summary>
         /// XYZW rotation quaternion, VEC4
         /// </summary>
-        rotation,
+        Rotation,
         /// <summary>
         /// XYZ scale vector, VEC3
         /// </summary>
-        scale,
+        Scale,
         /// <summary>
         /// Weights of morph targets, SCALAR
         /// </summary>
-        weights
+        Weights
     }
 
     public enum Interpolation

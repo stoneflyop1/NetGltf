@@ -9,7 +9,7 @@ namespace NetGltf.Json
         public string Name { get; set; }
 
         [JsonProperty("children")]
-        public List<Index<Node>> ChildrenIndices { get; set; } = new List<Index<Node>>();
+        public List<Index<Node>> Children { get; set; } = new List<Index<Node>>();
 
         [JsonProperty("mesh")]
         public Index<Mesh> Mesh { get; set; }
