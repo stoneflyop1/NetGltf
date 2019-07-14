@@ -6,10 +6,6 @@ namespace NetGltf.Tests
 {
     public class UriTests
     {
-        private static bool IsWindows()
-        {
-            return Path.DirectorySeparatorChar == '\\';
-        }
         [Fact]
         public void UriUtil_ValidUri_Test()
         {
@@ -21,11 +17,11 @@ namespace NetGltf.Tests
             Assert.True(UriUtil.IsValidUri(dataUrl));
             var httpUrl = "http://test.com/1";
             Assert.True(UriUtil.IsValidUri(httpUrl));
-            if (IsWindows())
+            if (UriUtil.IsWin())
             {
-                var windowsUrl = @"c:\1\2\"; //@"c:\folder\myfile.txt";
+                var windowsUrl = @"c:\1\2\";
                 Assert.True(UriUtil.IsValidUri(windowsUrl));
-                var windowsUrl2 = @"\1\2\"; //@"c:\folder\myfile.txt";
+                var windowsUrl2 = @"\1\2\"; 
                 Assert.True(UriUtil.IsValidUri(windowsUrl2));
             }
             else
@@ -47,7 +43,7 @@ namespace NetGltf.Tests
             Assert.Equal(https, UriUtil.Normalize(https));
             var ftp = "ftp://test.com";
             Assert.Equal(ftp, UriUtil.Normalize(ftp));
-            if (IsWindows())
+            if (UriUtil.IsWin())
             {
                 var windowsUrl = @"c:\1\2"; //@"c:\folder\myfile.txt";
                 var nUrl = UriUtil.Normalize(windowsUrl);
@@ -59,6 +55,36 @@ namespace NetGltf.Tests
                 var nUrl = UriUtil.Normalize(unixUrl);
                 Assert.Equal("file:///1/2", nUrl);
             }
+        }
+
+        [Fact]
+        public void UriUtil_Combine_Test()
+        {
+            var http = "http:/test.com";
+            var rPath = "test/test.html";
+            Assert.Equal(http + "/" + rPath, UriUtil.Combine(http, rPath));
+
+            if (UriUtil.IsWin())
+            {
+                var root = @"\test\test";
+                var rPath2 = @"\test\test.html";
+                Assert.Equal("/test/test/test/test.html", UriUtil.Combine(root, rPath2));
+                var rPath3 = @"..\test\test.html";
+                var cPath = UriUtil.Combine(root, rPath3);
+                var pRoot = Path.GetPathRoot(Path.GetFullPath("/"));
+                Assert.Equal($@"{pRoot}test\test\test.html", Path.GetFullPath(cPath));
+            }
+            else
+            {
+                var root = "/test/test";
+                var rPath2 = "/test/test.html";
+                Assert.Equal("/test/test/test/test.html", UriUtil.Combine(root, rPath2));
+                var rPath3 = "../test/test.html";
+                var cPath = UriUtil.Combine(root, rPath3);
+                var pRoot = Path.GetPathRoot(Path.GetFullPath("/"));
+                Assert.Equal($@"{pRoot}test/test/test.html", Path.GetFullPath(cPath));
+            }
+            
         }
 
         [Fact]
@@ -84,7 +110,7 @@ namespace NetGltf.Tests
         public void FileUri_Test()
         {
             var url = "/Users/Test/test.txt";
-            if (IsWindows()) // for windows
+            if (UriUtil.IsWin()) // for windows
             {
                 url = "c:"+url;
             }

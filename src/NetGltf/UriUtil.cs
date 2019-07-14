@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace NetGltf {
     public class UriUtil
@@ -10,6 +9,13 @@ namespace NetGltf {
         static UriUtil()
         {
             _isWin = Path.DirectorySeparatorChar == '\\';
+        }
+        /// <summary>
+        /// Is Windows Path
+        /// </summary>
+        public static bool IsWin()
+        {
+            return _isWin;
         }
 
         public static bool IsValidUri(string uri)
@@ -63,7 +69,9 @@ namespace NetGltf {
             {
                 throw new NotSupportedException("not support data url for combining");
             }
-            throw new NotImplementedException();
+            relativePath = relativePath.TrimStart('\\', '/');
+            root = root.TrimEnd('/', '\\');
+            return Path.Combine(root, relativePath).Replace('\\', '/');
         }
     }
 
