@@ -33,7 +33,7 @@ namespace NetGltf
         {
             try
             {
-                var model = Util.Deserialize<Model>(_filePath);
+                var model = JsonUtil.Deserialize<Model>(_filePath);
                 model.Uri = _filePath;
                 return Result.Ok(model);
             }
@@ -46,7 +46,7 @@ namespace NetGltf
         public void WriteModel(Model model, string filePath)
         {
             model.WriteUriFiles(filePath);
-            Util.Serialize(model, filePath);
+            JsonUtil.Serialize(model, filePath);
         }
     }
 }

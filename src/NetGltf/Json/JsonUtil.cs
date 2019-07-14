@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 
 namespace NetGltf.Json
 {
-    internal static class Util
+    internal static class JsonUtil
     {
         private static readonly JsonSerializer _serde;
 
-        static Util()
+        static JsonUtil()
         {
             _serde = new JsonSerializer
             {

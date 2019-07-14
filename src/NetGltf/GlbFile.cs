@@ -74,7 +74,7 @@ namespace NetGltf
             if (glb == null) throw new ArgumentNullException(nameof(glb));
 
             var json = Encoding.UTF8.GetString(glb.Json);
-            var model = Util.DeserializeString<Model>(json);
+            var model = JsonUtil.DeserializeString<Model>(json);
             if (glb.Bin != null && glb.Bin.Length > 0)
             {
                 model.Buffers[0].Uri = 
