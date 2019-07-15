@@ -79,7 +79,7 @@ namespace NetGltf.Json
         /// used to interpolate quaternions. The number output of elements must equal
         /// the number of input elements.
         /// </summary>
-        LINEAR = 1,
+        LINEAR,
         /// <summary>
         /// Step interpolation.
         ///
@@ -125,6 +125,6 @@ namespace NetGltf.Json
 
         [JsonProperty("interpolation")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public Interpolation Interpolation { get; set; } = Interpolation.LINEAR;
+        public Interpolation Interpolation { get; set; }
     }
 }

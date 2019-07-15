@@ -32,7 +32,7 @@ namespace NetGltf.Json
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("alphaMode")]
-        public AlphaMode AlphaMode { get; set; } = AlphaMode.OPAQUE;
+        public AlphaMode AlphaMode { get; set; }
         /// <summary>
         /// Specifies whether the material is double-sided.
         ///
@@ -81,7 +81,7 @@ namespace NetGltf.Json
     public enum AlphaMode
     {
         /// The alpha value is ignored and the rendered output is fully opaque.
-        OPAQUE = 1,
+        OPAQUE,
 
         /// The rendered output is either fully opaque or fully transparent depending on
         /// the alpha value and the specified alpha cutoff value.

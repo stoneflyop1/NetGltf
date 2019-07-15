@@ -28,7 +28,10 @@ namespace NetGltf.Json
     }
     public static class ModelValidationExtensions
     {
-
+        private static bool IsDefined<TEnum>(TEnum @enum) where TEnum: struct
+        {
+            return Enum.IsDefined(typeof(TEnum), @enum);
+        }
         private static void ValidateBufferViews(Model model, List<ValidationError> errors)
         {
             if (model.BufferViews != null && model.Buffers != null)
@@ -49,6 +52,12 @@ namespace NetGltf.Json
                     //{
                     //    errors.Add(new ValidationError(ValidationErrorKind.Missing, $"bufferView_{i}"));
                     //}
+
+                    if (view.Target != null && !IsDefined(view.Target.Value))
+                    {
+                        errors.Add(new ValidationError(
+                                ValidationErrorKind.Invalid, $"bufferView_{i}_target"));
+                    }
                 }
             }
         }
@@ -74,6 +83,18 @@ namespace NetGltf.Json
                     //    errors.Add(new ValidationError(ValidationErrorKind.Missing, $"accessor_{i}"));
                     //}
 
+                    if (!IsDefined(acc.ComponentType))
+                    {
+                        errors.Add(new ValidationError(
+                                ValidationErrorKind.Invalid, $"accessor_{i}_componenttype"));
+                    }
+
+                    if (!IsDefined(acc.AccessorType))
+                    {
+                        errors.Add(new ValidationError(
+                                ValidationErrorKind.Invalid, $"accessor_{i}_accessortype"));
+                    }
+
                     if (acc.Sparse != null)
                     {
                         if (acc.Sparse.Indices != null)
@@ -86,6 +107,11 @@ namespace NetGltf.Json
                                     errors.Add(new ValidationError(
                                         ValidationErrorKind.IndexOutOfBounds, $"accessor_{i}_sparse_index_bufferview"));
                                 }
+                            }
+                            if (!IsDefined(acc.Sparse.Indices.ComponentType))
+                            {
+                                errors.Add(new ValidationError(
+                                ValidationErrorKind.Invalid, $"accessor_{i}_sparse_index_componenttype"));
                             }
                         }
 
@@ -100,6 +126,7 @@ namespace NetGltf.Json
                                         ValidationErrorKind.IndexOutOfBounds, $"accessor_{i}_sparse_value_bufferview"));
                                 }
                             }
+                            
                         }
                     }
                 }
@@ -140,7 +167,69 @@ namespace NetGltf.Json
                                     {
                                         errors.Add(new ValidationError(
                                             ValidationErrorKind.IndexOutOfBounds,
-                                                $"mesh_{i}_primitive_{j}_material"));
+                                            $"mesh_{i}_primitive_{j}_material"));
+                                    }
+                                }
+                            }
+
+                            if (p.Targets != null)
+                            {
+                                if (model.Accessors != null)
+                                {
+                                    for (var k = 0; k < p.Targets.Count; k++)
+                                    {
+                                        var tt = p.Targets[k];
+                                        if (tt.Normals != null)
+                                        {
+                                            var index = tt.Normals;
+                                            if (index.Value < 0 || index.Value >= model.Accessors.Count)
+                                            {
+                                                errors.Add(new ValidationError(
+                                                    ValidationErrorKind.IndexOutOfBounds,
+                                                    $"mesh_{i}_primitive_{j}_target_{k}_normal"));
+                                            }                                            
+                                        }
+                                        if (tt.Positions != null)
+                                        {
+                                            var index = tt.Positions;
+                                            if (index.Value < 0 || index.Value >= model.Accessors.Count)
+                                            {
+                                                errors.Add(new ValidationError(
+                                                    ValidationErrorKind.IndexOutOfBounds,
+                                                    $"mesh_{i}_primitive_{j}_target_{k}_position"));
+                                            }
+                                        }
+                                        if (tt.Tangents != null)
+                                        {
+                                            var index = tt.Tangents;
+                                            if (index.Value < 0 || index.Value >= model.Accessors.Count)
+                                            {
+                                                errors.Add(new ValidationError(
+                                                    ValidationErrorKind.IndexOutOfBounds,
+                                                    $"mesh_{i}_primitive_{j}_target_{k}_tangent"));
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+
+                            if (!IsDefined(p.Mode))
+                            {
+                                errors.Add(new ValidationError(
+                                            ValidationErrorKind.Invalid,
+                                                $"mesh_{i}_primitive_{j}_mode"));
+                            }
+
+                            if (p.Attributes != null)
+                            {
+                                foreach(var k in p.Attributes.Keys)
+                                {
+                                    if (!IsDefined(k))
+                                    {
+                                        errors.Add(new ValidationError(
+                                            ValidationErrorKind.Invalid,
+                                                $"mesh_{i}_primitive_{j}_attirbute_{k.ToString()}"));
                                     }
                                 }
                             }
@@ -193,6 +282,18 @@ namespace NetGltf.Json
                         }
                         
                     }
+                    if (node.Camera != null)
+                    {
+                        if (model.Cameras != null)
+                        {
+                            var index = node.Camera;
+                            if (index.Value < 0 || index.Value >= model.Cameras.Count)
+                            {
+                                errors.Add(new ValidationError(
+                                    ValidationErrorKind.IndexOutOfBounds, $"node_{i}_camera"));
+                            }
+                        }
+                    }
                     if (node.Skin != null)
                     {
                         if (model.Skins != null)
@@ -206,8 +307,7 @@ namespace NetGltf.Json
                                         ValidationErrorKind.IndexOutOfBounds, $"node_{i}_skin"));
                                 }
                             }
-                        }
-                        
+                        }                       
 
                     }
                 }
@@ -340,6 +440,12 @@ namespace NetGltf.Json
                             }
                         }
                     }
+
+                    if (!IsDefined(mat.AlphaMode))
+                    {
+                        errors.Add(new ValidationError(
+                                    ValidationErrorKind.Invalid, $"material_{i}_alphamode_{mat.AlphaMode.ToString()}"));
+                    }
                 }
             }
         }
@@ -401,6 +507,11 @@ namespace NetGltf.Json
                         }
                         
                     }
+                    if (!img.IsValidImageType())
+                    {
+                        errors.Add(new ValidationError(
+                                    ValidationErrorKind.Invalid, $"image_{i}_mimetype_{img.MimeType}"));
+                    }
                 }
             }
         }
@@ -444,8 +555,13 @@ namespace NetGltf.Json
                                                 ValidationErrorKind.IndexOutOfBounds, 
                                                 $"animation_{i}_channel_{j}_target_node"));
                                         }
-                                    }
-                                    
+                                    }                                    
+                                }
+                                if (!IsDefined(c.Target.Path))
+                                {
+                                    errors.Add(new ValidationError(
+                                                ValidationErrorKind.Invalid,
+                                                $"animation_{i}_channel_{j}_target_path_{c.Target.Path.ToString()}"));
                                 }
                             }
                         }
@@ -477,6 +593,12 @@ namespace NetGltf.Json
                                             ValidationErrorKind.IndexOutOfBounds,
                                             $"animation_{i}_sampler_{j}_output_accessor"));
                                     }
+                                }
+                                if (!IsDefined(s.Interpolation))
+                                {
+                                    errors.Add(new ValidationError(
+                                            ValidationErrorKind.IndexOutOfBounds,
+                                            $"animation_{i}_sampler_{j}_interpolation_{s.Interpolation.ToString()}"));
                                 }
                             }
                         }

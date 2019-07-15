@@ -37,6 +37,12 @@ namespace NetGltf.Json
         /// otherwise it could be inferred from mesh' accessor objects.
         /// </summary>
         [JsonProperty("target")]
-        public int? Target { get; set; }
+        public TargetType? Target { get; set; }
+    }
+
+    public enum TargetType
+    {
+        ArrayBuffer = 34962,
+        ElementArrayBuffer = 34963
     }
 }

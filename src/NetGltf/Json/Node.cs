@@ -21,7 +21,7 @@ namespace NetGltf.Json
         public float[] Weights { get; set; }
 
         [JsonProperty("camera")]
-        public int? Camera { get; set; }
+        public Index<Camera> Camera { get; set; }
         /// <summary>
         /// float[16]
         /// </summary>
