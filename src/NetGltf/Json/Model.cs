@@ -10,6 +10,9 @@ namespace NetGltf.Json
     /// </summary>
     public class Model
     {
+        /// <summary>
+        /// Gltf filepath
+        /// </summary>
         [JsonIgnore]
         public string Uri {get;set;}
         [JsonProperty("asset")]
@@ -19,7 +22,7 @@ namespace NetGltf.Json
         public List<Buffer> Buffers { get; set; } = new List<Buffer>();
 
         [JsonProperty("bufferViews")]
-        public List<BufferView> Views { get; set; } = new List<BufferView>();
+        public List<BufferView> BufferViews { get; set; } = new List<BufferView>();
 
         [JsonProperty("accessors")]
         public List<Accessor> Accessors { get; set; } = new List<Accessor>();

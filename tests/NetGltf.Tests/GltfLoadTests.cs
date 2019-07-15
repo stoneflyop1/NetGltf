@@ -24,6 +24,10 @@ namespace NetGltf.Tests
             var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.True(model.Scenes.Count > 0);
+
+            var errors = model.Validate();
+            Assert.True(errors.Count == 0);
+
             var str = JsonConvert.SerializeObject(model, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
