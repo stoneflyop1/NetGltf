@@ -55,7 +55,7 @@ namespace NetGltf {
             {
                 return uri;
             }
-            var fullPath = Path.GetFullPath(uri);
+            var fullPath = Path.GetFullPath(uri).TrimStart('/').TrimEnd('/');
             return $"file:///{fullPath.Replace('\\','/')}";
         }
 

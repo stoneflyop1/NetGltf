@@ -114,7 +114,7 @@ namespace NetGltf.Tests
             {
                 url = "c:"+url;
             }
-            var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            var uri = new Uri(url, UriKind.Absolute);
             Assert.True(uri.IsFile);
             Assert.Equal("file", uri.Scheme);
         }
