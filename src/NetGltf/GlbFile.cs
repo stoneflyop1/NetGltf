@@ -79,7 +79,6 @@ namespace NetGltf
             {
                 model.Buffers[0].Uri = 
                     "data:application/octet-stream;base64," + Convert.ToBase64String(glb.Bin);
-                //data:application/octet-stream;base64,
             }
             return model;
         }

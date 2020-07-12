@@ -16,6 +16,7 @@ namespace NetGltf.Json
                 NullValueHandling = NullValueHandling.Ignore
             };
             _serde.Converters.Add(new IndexConverter());
+            _serde.Converters.Add(new CheckedEnumConverter());
         }
 
         public static T DeserializeString<T>(string json)

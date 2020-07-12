@@ -20,7 +20,13 @@ namespace NetGltf.Tests
             var rootPath = Path.GetFullPath(SampleRootPath);
             var gltfFile = Path.Combine(rootPath, "CesiumMan.gltf");
             var content = File.ReadAllText(gltfFile);
-            var model = JsonConvert.DeserializeObject<Model>(content);
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new ArrayContractResolver(),
+                Converters = new JsonConverter[] { new IndexConverter(), new CheckedEnumConverter() }
+            };
+            var model = JsonConvert.DeserializeObject<Model>(content, jsonSettings);
             var node = model.Nodes.FirstOrDefault(c => c.Children.Count > 0);
             var sceneIndex = model.Scene;
             Assert.True(model.Scenes.Count > 0);
@@ -28,12 +34,7 @@ namespace NetGltf.Tests
             var errors = model.Validate();
             Assert.True(errors.Count == 0);
 
-            var str = JsonConvert.SerializeObject(model, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new ArrayContractResolver(),
-                Converters = new JsonConverter[] { new IndexConverter() }
-            });
+            var str = JsonConvert.SerializeObject(model, jsonSettings);
             var path = Path.GetFullPath("test.gltf");
             File.WriteAllText(path, str);
         }

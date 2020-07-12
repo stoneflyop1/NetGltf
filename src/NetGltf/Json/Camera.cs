@@ -15,8 +15,8 @@ namespace NetGltf.Json
         /// Specifies if the camera uses a perspective or orthographic projection.
         /// </summary>
         [JsonProperty("type")]
-        [JsonConverter(typeof(StringEnumConverter), true)]
-        public CameraType CameraType {get;set;}
+        //[JsonConverter(typeof(StringEnumConverter), true)]
+        public CheckedValue<CameraType,string> CameraType {get;set;}
 
         /// <summary>
         /// An orthographic camera containing properties to create an orthographic projection matrix.

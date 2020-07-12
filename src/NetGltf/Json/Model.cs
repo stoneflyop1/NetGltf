@@ -59,6 +59,10 @@ namespace NetGltf.Json
 
         [JsonProperty("cameras")]
         public List<Camera> Cameras {get;set;} = new List<Camera>();
+        [JsonProperty("extensionsUsed")]
+        public List<string> ExtensionsUsed {get;set;}
+        [JsonProperty("extensionsRequired")]
+        public List<string> ExtensionsRequired {get;set;}
     }
 
     public static class ModelExtensions

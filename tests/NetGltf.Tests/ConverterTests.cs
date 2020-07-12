@@ -42,5 +42,40 @@ namespace NetGltf.Tests
             [JsonConverter(typeof(IndexConverter))]
             public Index<Scene> Scene { get; set; }
         }
+
+        [Fact]
+        public void Test_Checked_Enums()
+        {
+            var converter = new CheckedEnumConverter();
+            var obj = new EnumClassTest();
+            obj.Component = new CheckedValue<ComponentType, int>(5123);
+            obj.Accessor = new CheckedValue<AccessorType, string>("VEC3");
+            obj.Accessor2 = new CheckedValue<AccessorType, string>(1);
+            obj.TargetProperty = new CheckedValue<TargetProperty, string>("translation");
+            obj.Target = new CheckedValue<TargetType,int>(34963);
+
+            var json = JsonConvert.SerializeObject(obj, converter);
+
+            var obj2 = JsonConvert.DeserializeObject<EnumClassTest>(json, converter);
+
+            Assert.True(obj2.Component.IsValid);
+            Assert.True(obj2.Accessor.IsValid);
+            Assert.True(!obj2.Accessor2.IsValid);
+            Assert.True(obj2.TargetProperty.IsValid);
+            Assert.True(obj2.Target.HasValue && obj2.Target.Value.IsValid);
+        }
+
+        public class EnumClassTest
+        {
+            public CheckedValue<ComponentType, int> Component {get;set;}
+
+            public CheckedValue<AccessorType, string> Accessor {get;set;}
+
+            public CheckedValue<AccessorType, string> Accessor2 {get;set;}
+
+            public CheckedValue<TargetProperty,string> TargetProperty {get;set;}
+
+            public CheckedValue<TargetType,int>? Target {get;set;}
+        }
     }
 }

@@ -16,22 +16,22 @@ namespace NetGltf.Json
         /// Magnification filter.
         /// </summary>
         [JsonProperty("magFilter")]
-        public MagFilter MagFilter { get; set; }
+        public CheckedValue<MagFilter,int>? MagFilter { get; set; }
         /// <summary>
         /// Minification filter.
         /// </summary>
         [JsonProperty("minFilter")]
-        public MinFilter MinFilter { get; set; }
+        public CheckedValue<MinFilter,int>? MinFilter { get; set; }
         /// <summary>
         /// `s` wrapping mode.
         /// </summary>
         [JsonProperty("wrapS")]
-        public WrappingMode WrapS { get; set; }
+        public CheckedValue<WrappingMode,int>? WrapS { get; set; }
         /// <summary>
         /// `t` wrapping mode.
         /// </summary>
         [JsonProperty("wrapT")]
-        public WrappingMode WrapT { get; set; }
+        public CheckedValue<WrappingMode,int>? WrapT { get; set; }
     }
 
     /// <summary>

@@ -37,7 +37,7 @@ namespace NetGltf.Json
         /// otherwise it could be inferred from mesh' accessor objects.
         /// </summary>
         [JsonProperty("target")]
-        public TargetType? Target { get; set; }
+        public CheckedValue<TargetType,int>? Target { get; set; }
     }
 
     public enum TargetType

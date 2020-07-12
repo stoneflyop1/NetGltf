@@ -11,7 +11,42 @@ namespace NetGltf.Json
 
         [JsonProperty("pbrMetallicRoughness")]
         public PbrMetallicRoughness PbrMetallicRoughness { get; set; }
-
+        /// <summary>
+        /// tangent space normal map. The texture contains RGB components in linear
+        /// space. Each texel represents the XYZ components of a normal vector in
+        /// tangent space. Red [0 to 255] maps to X [-1 to 1]. Green [0 to 255] maps to
+        /// Y [-1 to 1]. Blue [128 to 255] maps to Z [1/255 to 1]. The normal vectors
+        /// use OpenGL conventions where +X is right and +Y is up. +Z points toward the
+        /// viewer.
+        /// </summary>
+        [JsonProperty("normalTexture")]
+        public NormalTexture NormalTexture { get; set; }
+        /// <summary>
+        /// The occlusion map texture. The occlusion values are sampled from the R
+        /// channel. Higher values indicate areas that should receive full indirect
+        /// lighting and lower values indicate no indirect lighting. These values are
+        /// linear. If other channels are present (GBA), they are ignored for occlusion
+        /// calculations.
+        /// </summary>
+        [JsonProperty("occlusionTexture")]
+        public OcclusionTexture OcclusionTexture { get; set; }
+        /// <summary>
+        /// The emissive map controls the color and intensity of the light being emitted
+        /// by the material. This texture contains RGB components in sRGB color space.
+        /// If a fourth component (A) is present, it is ignored.
+        /// </summary>
+        [JsonProperty("emissiveTexture")]
+        public TextureInfo EmissiveTexture {get;set;}
+        /// <summary>
+        /// The emissive color of a material. f32[3]
+        /// </summary>
+        [JsonProperty("emissiveFactor")]
+        public float[] EmissiveFactor {get;set;}
+        /// <summary>
+        /// The alpha cutoff value of a material.
+        /// </summary>
+        [JsonProperty("alphaCutoff")]
+        public float? AlphaCutoff {get;set;}
         /// <summary>
         /// The alpha rendering mode of the material.
         ///
@@ -30,9 +65,9 @@ namespace NetGltf.Json
         ///   background using the normal painting operation (i.e. the Porter and
         ///   Duff over operator).
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        //[JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("alphaMode")]
-        public AlphaMode AlphaMode { get; set; }
+        public CheckedValue<AlphaMode,string>? AlphaMode { get; set; }
         /// <summary>
         /// Specifies whether the material is double-sided.
         ///
@@ -90,5 +125,25 @@ namespace NetGltf.Json
         /// The rendered output is either fully opaque or fully transparent depending on
         /// the alpha value and the specified alpha cutoff value.
         BLEND,
+    }
+
+    public class NormalTexture 
+    {
+        [JsonProperty("index")]
+        public Index<Texture> Index {get;set;}
+        [JsonProperty("scale")]
+        public float Scale {get;set;}
+        [JsonProperty("texCoord")]
+        public int TexCoord {get;set;}
+    }
+
+    public class OcclusionTexture
+    {
+        [JsonProperty("index")]
+        public Index<Texture> Index {get;set;}
+        [JsonProperty("strength")]
+        public float StrengthFactor {get;set;}
+        [JsonProperty("texCoord")]
+        public int TexCoord {get;set;}
     }
 }

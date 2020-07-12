@@ -45,8 +45,8 @@ namespace NetGltf.Json
         /// morph targets it instantiates.
         /// </summary>
         [JsonProperty("path")]
-        [JsonConverter(typeof(StringEnumConverter), true)]
-        public TargetProperty Path { get; set; }
+        //[JsonConverter(typeof(StringEnumConverter), true)]
+        public CheckedValue<TargetProperty,string> Path { get; set; }
     }
 
     public enum TargetProperty
@@ -124,7 +124,7 @@ namespace NetGltf.Json
         public Index<Accessor> Output { get; set; }
 
         [JsonProperty("interpolation")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Interpolation Interpolation { get; set; }
+        //[JsonConverter(typeof(StringEnumConverter))]
+        public CheckedValue<Interpolation, string> Interpolation { get; set; }
     }
 }

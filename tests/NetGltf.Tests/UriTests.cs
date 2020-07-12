@@ -6,6 +6,8 @@ namespace NetGltf.Tests
 {
     public class UriTests
     {
+        private static readonly string dataUrl = 
+            "data:application/octet-stream;base64,QPnrOD1Ef7+g65o9AAAAAAAAgD80Wd44ROfAuAAAAAAhj684oOuaPTpEfz8AAAAAf7Klu01iUr1oUy2";
         [Fact]
         public void UriUtil_ValidUri_Test()
         {
@@ -13,7 +15,6 @@ namespace NetGltf.Tests
             Assert.True(UriUtil.IsValidUri(relativeUrl));
             var absoluteUrl = "/test/1.html";
             Assert.True(UriUtil.IsValidUri(absoluteUrl));
-            var dataUrl = "data:application/octet-stream;base64,QPnrOD1Ef7+g65o9AAAAAAAAgD80Wd44ROfAuAAAAAAhj684oOuaPTpEfz8AAAAAf7Klu01iUr1oUy2";
             Assert.True(UriUtil.IsValidUri(dataUrl));
             var httpUrl = "http://test.com/1";
             Assert.True(UriUtil.IsValidUri(httpUrl));
@@ -98,7 +99,6 @@ namespace NetGltf.Tests
             Assert.True(isOK4);
             var isOK5 = Uri.IsWellFormedUriString("https://microsoft.com/robots.txt", UriKind.Absolute);
             Assert.True(isOK5);
-            var dataUrl = "data:application/octet-stream;base64,QPnrOD1Ef7+g65o9AAAAAAAAgD80Wd44ROfAuAAAAAAhj684oOuaPTpEfz8AAAAAf7Klu01iUr1oUy2";
             var isOKD = Uri.IsWellFormedUriString(dataUrl, UriKind.Absolute);
             Assert.True(isOKD);
             var isOK3 = Uri.IsWellFormedUriString("/test.jpg", UriKind.Absolute);
@@ -122,7 +122,7 @@ namespace NetGltf.Tests
         [Fact]
         public void DataUri_Test()
         {
-            var uri = new Uri("data:application/octet-stream;base64,QPnrOD1Ef7+g65o9AAAAAAAAgD80Wd44ROfAuAAAAAAhj684oOuaPTpEfz8AAAAAf7Klu01iUr1oUy2");
+            var uri = new Uri(dataUrl);
             Assert.True(!uri.IsFile);
             Assert.Equal("data", uri.Scheme);
         }

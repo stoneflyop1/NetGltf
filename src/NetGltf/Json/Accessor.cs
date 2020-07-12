@@ -12,7 +12,7 @@ namespace NetGltf.Json
         public int ByteOffset { get; set; }
 
         [JsonProperty("componentType")]
-        public ComponentType ComponentType { get; set; }
+        public CheckedValue<ComponentType, int> ComponentType { get; set; }
 
         [JsonProperty("count")]
         public int Count { get; set; }
@@ -30,8 +30,8 @@ namespace NetGltf.Json
         public float[] Max { get; set; }
 
         [JsonProperty("type")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public AccessorType AccessorType { get; set; }
+        //[JsonConverter(typeof(StringEnumConverter))]
+        public CheckedValue<AccessorType, string> AccessorType { get; set; }
 
         /// <summary>
         /// for morph targets
@@ -79,7 +79,7 @@ namespace NetGltf.Json
             public int ByteOffset { get; set; }
 
             [JsonProperty("componentType")]
-            public ComponentType ComponentType { get; set; }
+            public CheckedValue<ComponentType, int> ComponentType { get; set; }
         }
     }
 

@@ -44,7 +44,7 @@ namespace NetGltf.Json
         /// The type of primitives to render.
         /// </summary>
         [JsonProperty("mode")]
-        public Mode Mode { get; set; }
+        public CheckedValue<Mode,int>? Mode { get; set; }
 
         [JsonProperty("targets")]
         public List<MorphTarget> Targets { get; set; }
