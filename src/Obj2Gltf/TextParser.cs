@@ -8,6 +8,7 @@ namespace Obj2Gltf
 {
     class TextParser
     {
+        public static readonly Encoding DefaultEncoding = Encoding.UTF8;
         internal static void Lex(StreamReader reader, Action<string, IList<string>> action)
         {
             var args = new List<string>();
