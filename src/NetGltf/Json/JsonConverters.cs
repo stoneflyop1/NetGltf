@@ -93,12 +93,17 @@ namespace NetGltf.Json {
         {
             var isNullable = objectType.Name == NullableCheckType.Name &&
                 objectType.Namespace == NullableCheckType.Namespace;
-            var gTypes = objectType.GetGenericArguments();
-            if (gTypes.Length == 1) {
-                if (IsCheckType(gTypes[0])) {
-                    return gTypes[0];
+            if (isNullable)
+            {
+                var gTypes = objectType.GetGenericArguments();
+                if (gTypes.Length == 1)
+                {
+                    if (IsCheckType(gTypes[0]))
+                    {
+                        return gTypes[0];
+                    }
                 }
-            }
+            }            
             return null;
         }
 
