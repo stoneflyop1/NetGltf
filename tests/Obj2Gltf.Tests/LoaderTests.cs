@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Obj2Gltf.WaveFront;
 using Xunit;
 
 namespace Obj2Gltf.Tests
@@ -10,6 +11,7 @@ namespace Obj2Gltf.Tests
         /// relative to bin/Debug/netcoreapp2.2
         /// </summary>
         internal static readonly string SampleRootPath = @"../../../../../objsamples";
+
         [Fact]
         public void ObjLoad_Tests()
         {
@@ -21,6 +23,16 @@ namespace Obj2Gltf.Tests
             Assert.Equal(92, objModel.Positions.Count);
             Assert.Equal(19, objModel.Normals.Count);
             Assert.Equal(32, objModel.TextureCoords.Count);
+        }
+
+        [Fact]
+        public void MtlLoad_Tests()
+        {
+            var mtlFile = Path.Combine(SampleRootPath, "model/model.mtl");
+
+            var model = MtlParser.Parse(mtlFile);
+            Assert.NotNull(model);
+            Assert.Equal(4, model.Materials.Count);
         }
 
         [Fact]

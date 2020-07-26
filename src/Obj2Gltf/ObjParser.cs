@@ -62,7 +62,7 @@ namespace Obj2Gltf
     {
         public static ObjModel Parse(string inputFile, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding = encoding ?? TextParser.DefaultEncoding;
             // https://stackoverflow.com/questions/2161895/reading-large-text-files-with-streams-in-c-sharp
             using (var fs = new FileStream(inputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
             using(var bs = new BufferedStream(fs))

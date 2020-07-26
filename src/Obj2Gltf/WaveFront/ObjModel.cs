@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Obj2Gltf.WaveFront
 {
+    /// <summary>
+    /// http://paulbourke.net/dataformats/obj/
+    /// </summary>
     public class ObjModel
     {
         /// <summary>
