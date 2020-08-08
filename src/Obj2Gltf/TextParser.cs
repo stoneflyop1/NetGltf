@@ -30,14 +30,31 @@ namespace Obj2Gltf
                 }
                 multiLine.Append(line);
 
-                var words = multiLine.ToString().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                var key = words[0];
-                args.AddRange(words.Skip(1));
+                var ss = multiLine.ToString();
+                var sepIndex = ss.IndexOf(' ');
+                string key;
+                if (sepIndex != -1)
+                {
+                    key = ss.Substring(0, sepIndex).Trim();
+                    args.Add(ss.Substring(sepIndex + 1).Trim());
+                }
+                else
+                {
+                    key = ss.Trim();
+                }
+                //var words = ss.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                //var key = words[0];
+                //args.AddRange(words.Skip(1));
                 action(key, args);
                 args.Clear();
 
                 multiLine.Clear();
-            }            
+            }
+        }
+
+        internal static IList<string> ParseArgs(IList<string> input)
+        {
+            return String.Join(" ", input).Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

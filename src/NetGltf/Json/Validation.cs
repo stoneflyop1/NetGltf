@@ -7,6 +7,19 @@ namespace NetGltf.Json
 {
     public struct CheckedValue<TEnum, TVal> where TEnum : struct, Enum
     {
+        public CheckedValue(TEnum @enum)
+        {
+            _value = @enum;
+            if (typeof(TVal) == typeof(String))
+            {
+                Value = @enum.ToString();
+            }
+            else
+            {
+                Value = Convert.ChangeType(@enum, typeof(int));
+            }
+            IsValid = true;
+        }
         public CheckedValue(object val)
         {
             Value = val;

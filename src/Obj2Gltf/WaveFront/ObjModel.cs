@@ -79,6 +79,6 @@ namespace Obj2Gltf.WaveFront
         }
         public uint PntCount;
         public uint LineCount;
-        public uint PolyCount;        
+        public uint PolyCount;
     }
 }
