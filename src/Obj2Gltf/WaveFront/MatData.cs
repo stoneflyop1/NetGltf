@@ -1,152 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace Obj2Gltf.WaveFront
 {
-    public class MtlParser
-    {
-        private static MtlColor ParseColor(IList<string> args)
-        {
-            if (args.Count == 0)
-            {
-                throw new ArgumentException("not enough argments", nameof(args));
-            }
-            switch(args[0])
-            {
-                case "xyz":
-                    if (args.Count == 2)
-                    {
-                        return new ColorXyz(float.Parse(args[1]));
-                    }
-                    if (args.Count >= 4)
-                    {
-                        return new ColorXyz(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                    }
-                    throw new ArgumentException("not enough argments, need 2 or 4", nameof(args));
-                case "spectral":
-                    if (args.Count == 2)
-                    {
-                        return new ColorSpectral(args[1]);
-                    }
-                    if (args.Count >= 3)
-                    {
-                        return new ColorSpectral(args[1], float.Parse(args[2]));
-                    }
-                    throw new ArgumentException("not enough argments, need 2 or 3", nameof(args));
-                default:
-                    if (args.Count == 1)
-                    {
-                        return new ColorRgb(float.Parse(args[0]));
-                    }
-                    if (args.Count == 3)
-                    {
-                        return new ColorRgb(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
-                    }
-                    throw new ArgumentException("not enough argments, need 1 or 3", nameof(args));
-            }
-        }
-
-        private static string ParseMap(IList<string> args)
-        {
-            if (args.Count == 0)
-            {
-                throw new ArgumentException("not enough argments", nameof(args));
-            }
-            return args[0];
-        }
-        public static MtlModel Parse(string inputFile, Encoding encoding = null)
-        {
-            encoding = encoding ?? TextParser.DefaultEncoding;
-
-            using (var fs = new FileStream(inputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var bs = new BufferedStream(fs))
-            using (var sr = new StreamReader(bs, encoding))
-            {
-                var model = new MtlModel();
-                string name = null;
-                var mat = new Material();
-
-                TextParser.Lex(sr, (key, args) =>
-                {
-                    switch(key)
-                    {
-                        case "newmtl":
-                            if (!String.IsNullOrEmpty(name))
-                            {
-                                model.Materials.Add(name, mat);
-                            }
-                            name = args[0];
-                            break;
-                        case "Ka":
-                            mat.Ambient = ParseColor(args);
-                            break;
-                        case "Kd":
-                            mat.Diffuse = ParseColor(args);
-                            break;
-                        case "Ks":
-                            mat.Specular = ParseColor(args);
-                            break;
-                        case "Ke":
-                            mat.Emissive = ParseColor(args);
-                            break;
-                        case "Tf":
-                            mat.TransmissionFilter = ParseColor(args);
-                            break;
-                        case "Ns":
-                            if (float.TryParse(args[0], out var ns))
-                            {
-                                mat.SpecularExponent = ns;
-                            }
-                            break;
-                        case "Ni":
-                            if (float.TryParse(args[0], out var ni))
-                            {
-                                mat.OpticalDensity = ni;
-                            }
-                            break;
-                        case "illum":
-                            if (uint.TryParse(args[0], out var illum))
-                            {
-                                mat.Illumination = illum;
-                            }
-                            break;
-                        case "d":
-                            if (float.TryParse(args[0], out var d))
-                            {
-                                mat.Dissolve = d;
-                            }
-                            break;
-                        case "map_Ka":
-                            mat.AmbientMap = ParseMap(args);
-                            break;
-                        case "map_Kd":
-                            mat.DiffuseMap = ParseMap(args);
-                            break;
-                        case "map_Ks":
-                            mat.SpecularMap = ParseMap(args);
-                            break;
-                        case "map_Ke":
-                            mat.EmissiveMap = ParseMap(args);
-                            break;
-                        case "bump":
-                        case "map_bump":
-                        case "map_Bump":
-                            mat.BumpMap = ParseMap(args);
-                            break;
-                    }
-                });
-
-                if (!String.IsNullOrEmpty(name))
-                {
-                    model.Materials.Add(name, mat);
-                }
-                return model;
-            }
-        }
-    }
-
     public class MtlModel
     {
         public Dictionary<string, Material> Materials { get; } = new Dictionary<string, Material>();
@@ -216,11 +73,14 @@ namespace Obj2Gltf.WaveFront
         /// bump
         /// </summary>
         public string BumpMap { get; set; }
+
     }
 
     public abstract class MtlColor
     {
         public abstract ColorType ColorType { get; }
+
+        public abstract float[] ToRGB();
     }
 
     public enum ColorType
@@ -240,6 +100,11 @@ namespace Obj2Gltf.WaveFront
             B = b;
         }
         public override ColorType ColorType => ColorType.RGB;
+
+        public override float[] ToRGB()
+        {
+            return new[] { R, G, B };
+        }
 
         public float R { get; }
 
@@ -264,6 +129,15 @@ namespace Obj2Gltf.WaveFront
         }
         public override ColorType ColorType => ColorType.XYZ;
 
+        // https://stackoverflow.com/questions/43494018/converting-xyz-color-to-rgb
+        public override float[] ToRGB()
+        {
+            var r = 3.2404542f * X - 1.5371385f * Y - 0.4985314f * Z;
+            var g = -0.9692660f * X + 1.8760108f * Y + 0.0415560f * Z;
+            var b = 0.0556434f * X - 0.2040259f * Y + 1.0572252f * Z;
+            return new[] { r, g, b };
+        }
+
         public float X { get; }
         public float Y { get; }
         public float Z { get; }
@@ -283,6 +157,13 @@ namespace Obj2Gltf.WaveFront
             Factor = factor;
         }
         public override ColorType ColorType => ColorType.Spectral;
+
+        public override float[] ToRGB()
+        {
+            // https://mathematica.stackexchange.com/questions/57389/convert-spectral-distribution-to-rgb-color
+            //TODO:
+            return new[] { 0.315f, 0.315f, 0.315f };
+        }
 
         public string RflFile { get; }
         public float Factor { get; }

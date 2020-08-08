@@ -74,37 +74,44 @@ namespace Obj2Gltf
                 var meshBuilder = model.GetMapBuilder("");
                 TextParser.Lex(sr, (key, args) =>
                 {
-                    switch(key)
+                    switch (key)
                     {
+                        case "mtllib":
+                            model.MaterialLibaries.AddRange(args);
+                            break;
                         case "v":
+                            args = TextParser.ParseArgs(args);
                             model.Positions.Add(ParsePoint(args));
                             break;
                         case "vt":
+                            args = TextParser.ParseArgs(args);
                             model.TextureCoords.Add(ParseUv(args));
                             break;
                         case "vn":
+                            args = TextParser.ParseArgs(args);
                             model.Normals.Add(ParseNormal(args));
                             break;
                         case "vp":
                             break;
                         case "p":
-                            foreach(var a in args)
+                            args = TextParser.ParseArgs(args);
+                            foreach (var a in args)
                             {
                                 var index = FindIndex(model.Positions, a);
                                 model.Points.Add(index);
                             }
                             break;
                         case "l":
+                            args = TextParser.ParseArgs(args);
                             FillLineSegments(model, args);
                             break;
                         case "fo":
                         case "f":
+                            args = TextParser.ParseArgs(args);
                             FillPolygon(model, args);
                             break;
-                        case "mtllib":
-                            model.MaterialLibaries.AddRange(args);
-                            break;
                         case "g":
+                            args = TextParser.ParseArgs(args);
                             groupBuilder.Start(args[0]);
                             break;
                         case "usemtl":
@@ -137,7 +144,7 @@ namespace Obj2Gltf
 
         private static Point ParsePoint(IList<string> args)
         {
-            switch(args.Count)
+            switch (args.Count)
             {
                 case 4:
                     return new Point(float.Parse(args[0]), float.Parse(args[1]), 
@@ -152,7 +159,7 @@ namespace Obj2Gltf
 
         private static Uv ParseUv(IList<string> args)
         {
-            switch(args.Count)
+            switch (args.Count)
             {
                 case 3:
                     return new Uv(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
@@ -167,7 +174,7 @@ namespace Obj2Gltf
 
         private static Normal ParseNormal(IList<string> args)
         {
-            switch(args.Count)
+            switch (args.Count)
             {
                 case 3:
                     return new Normal(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));

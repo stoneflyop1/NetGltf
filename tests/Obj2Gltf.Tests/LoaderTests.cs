@@ -8,7 +8,7 @@ namespace Obj2Gltf.Tests
     public class LoaderTests
     {
         /// <summary>
-        /// relative to bin/Debug/netcoreapp2.2
+        /// relative to bin/Debug/netcoreapp3.1
         /// </summary>
         internal static readonly string SampleRootPath = @"../../../../../objsamples";
 
