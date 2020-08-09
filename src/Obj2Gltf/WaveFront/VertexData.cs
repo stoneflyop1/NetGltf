@@ -24,6 +24,15 @@ namespace Obj2Gltf.WaveFront
         {
             return $"{X}, {Y}, {Z}, {W}";
         }
+
+        public float[] ToArray()
+        {
+            if (W.HasValue)
+            {
+                return new float[] { X, Y, Z, W.Value };
+            }
+            return new[] { X, Y, Z };
+        }
     }
 
     public struct Normal
@@ -39,6 +48,11 @@ namespace Obj2Gltf.WaveFront
         public override string ToString()
         {
             return $"{X}, {Y}, {Z}";
+        }
+
+        public float[] ToArray()
+        {
+            return new[] { X, Y, Z };
         }
     }
 
@@ -59,6 +73,15 @@ namespace Obj2Gltf.WaveFront
         public override string ToString()
         {
             return $"{U}, {V}, {W}";
+        }
+
+        public float[] ToArray()
+        {
+            if (W.HasValue)
+            {
+                return new[] { U, V, W.Value };
+            }
+            return new[] { U, V };
         }
     }
 }

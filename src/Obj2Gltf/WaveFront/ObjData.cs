@@ -80,7 +80,7 @@ namespace Obj2Gltf.WaveFront
             }
         }
     }
-    public struct PolygonVertex
+    public struct PolygonVertex : IEquatable<PolygonVertex>
     {
         public PolygonVertex(uint v) : this(v, null, null) { }
         public PolygonVertex(uint v, uint? vn) : this(v, null, vn) { }
@@ -97,6 +97,31 @@ namespace Obj2Gltf.WaveFront
         public override string ToString()
         {
             return $"{V}/{VT}/{VN}";
+        }
+
+        public bool Equals(PolygonVertex other)
+        {
+            var v = V;
+            var vt = VT ?? 0;
+            var vn = VN ?? 0;
+            return v == other.V && vt == (other.VT ?? 0) && vn == (other.VN ?? 0);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is PolygonVertex)
+            {
+                return Equals((PolygonVertex)obj);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            var v = (int)V;
+            var vt = (int)(VT ?? 0);
+            var vn = (int)(VN ?? 0);
+            return v ^ vt ^ vn;
         }
     }
     public class Polygon

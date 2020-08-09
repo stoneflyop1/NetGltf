@@ -4,6 +4,8 @@ using System.Text;
 using System.IO;
 using NetGltf.Json;
 using System.Linq;
+using Obj2Gltf.WaveFront;
+using Material = NetGltf.Json.Material;
 
 namespace Obj2Gltf
 {
@@ -16,6 +18,7 @@ namespace Obj2Gltf
         private readonly string _gltfFolder;
         private readonly Dictionary<string, int> _textureDict = new Dictionary<string, int>();
         private readonly Dictionary<string, string> _gltfTextureDict = new Dictionary<string, string>();
+        private readonly Dictionary<string, int> _matDict = new Dictionary<string, int>();
 
         public ModelConverter(string objFile, string gltfFile, ConverterOptions options)
         {
@@ -29,8 +32,6 @@ namespace Obj2Gltf
         public Model Run()
         {
             var model = new Model { Asset = new Asset() };
-            var scene = new Scene();
-            model.Scenes.Add(scene);
 
             model.Samplers.Add(new Sampler
             {
@@ -43,7 +44,7 @@ namespace Obj2Gltf
             // parse obj files
             var objModel = ObjParser.Parse(_objFile);
             
-            var mtlModels = new List<WaveFront.MtlModel>();
+            var mtlModels = new List<MtlModel>();
             foreach(var mtl in objModel.MaterialLibaries)
             {
                 var mtlM = MtlParser.Parse(Path.Combine(_objFolder, mtl));
@@ -53,12 +54,301 @@ namespace Obj2Gltf
                     var matName = m.Key;
                     var mm = m.Value;
                     var matIndex = AddMaterial(model, matName, mm);
+                    _matDict.Add(matName, matIndex);
                 }
             }
 
-            
+            AddNodes(model, objModel);
 
             return model;
+        }
+
+        private void AddNodes(Model model, ObjModel objModel)
+        {
+            var u32Indices = RequiresU32Indices(objModel);
+
+            var scene = new Scene();
+            model.Scenes.Add(scene);
+            var nodeName = objModel.Name;
+            if (String.IsNullOrEmpty(nodeName))
+            {
+                nodeName = "default";
+            }
+            var node = new Node { Name = nodeName };
+            model.Nodes.Add(node);
+            var polyMatDict = GetPolygonMatDict(objModel);
+            foreach (var gd in objModel.Groups)
+            {
+                var key = gd.Key;
+                var g = gd.Value;
+                var mesh = new Mesh { Name = key };
+                var faceList = new SortedList<int, List<int>>();
+                foreach(var pp in g.Polygons)
+                {
+                    for (var i = pp.Start; i < pp.End; i++)
+                    {
+                        var pIndex = (int)i;
+                        var matName = polyMatDict[pIndex];
+                        var matId = _matDict[matName];
+                        if (!faceList.ContainsKey(matId))
+                        {
+                            faceList.Add(matId, new List<int>());
+                        }
+                        faceList[matId].Add(pIndex);
+                    }
+                }
+                var faceIndex = 0;
+                foreach(var fd in faceList)
+                {
+                    var matId = fd.Key;
+                    var polygons = fd.Value;
+                    string faceName;
+                    if (faceIndex > 0)
+                    {
+                        faceName = key + "_" + faceIndex;
+                    }
+                    else
+                    {
+                        faceName = key;
+                    }
+                    var p = new Primitive { Material = matId, Mode = new CheckedValue<Mode, int>(Mode.Triangles) };
+                    var state = new PrimitiveState();
+
+                    foreach (var pIndex in polygons)
+                    {
+                        var poly = objModel.Polygons[pIndex];
+                        if (poly.Vertices.Count == 3)
+                        {
+                            AddPolygon(p, state, model, objModel, poly);
+                        }
+                        else if (poly.Vertices.Count > 3)
+                        {
+                            //TODO:
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddPolygon(Primitive p, PrimitiveState state, Model model, ObjModel objModel, Polygon poly)
+        {
+            var v1 = poly.Vertices[0];
+            var v2 = poly.Vertices[1];
+            var v3 = poly.Vertices[2];
+            var v1Index = (int)(v1.V - 1);
+            var v2Index = (int)(v2.V - 1);
+            var v3Index = (int)(v3.V - 1);
+            var v1v = objModel.Positions[v1Index];
+            var v2v = objModel.Positions[v2Index];
+            var v3v = objModel.Positions[v3Index];
+            UpdateMinMax(state.VertexXMM, v1v.X, v2v.X, v3v.X);
+            UpdateMinMax(state.VertexYMM, v1v.Y, v2v.Y, v3v.Y);
+            UpdateMinMax(state.VertexZMM, v1v.Z, v2v.Z, v3v.Z);
+
+            var hasNormal = v1.VN.HasValue;
+            var hasUV = v1.VT.HasValue;
+
+            Normal n1, n2, n3;
+
+            if (hasNormal)
+            {
+                var n1Index = (int)(v1.VN.Value - 1);
+                var n2Index = (int)(v2.VN.Value - 1);
+                var n3Index = (int)(v3.VN.Value - 1);
+                n1 = objModel.Normals[n1Index];
+                n2 = objModel.Normals[n2Index];
+                n3 = objModel.Normals[n3Index];
+                UpdateMinMax(state.NormalXMM, n1.X, n2.X, n3.X);
+            }
+            else
+            {
+                n1 = new Normal();
+                n2 = n1;
+                n3 = n1;
+            }
+
+            Uv t1, t2, t3;
+            if (hasUV)
+            {
+                var t1Index = (int)(v1.VT.Value - 1);
+                var t2Index = (int)(v2.VT.Value - 1);
+                var t3Index = (int)(v3.VT.Value - 1);
+                t1 = objModel.TextureCoords[t1Index];
+                t2 = objModel.TextureCoords[t2Index];
+                t3 = objModel.TextureCoords[t3Index];
+                UpdateMinMax(state.UvUMM, t1.U, t2.U, t3.U);
+                UpdateMinMax(state.UvVMM, 1 - t1.V, 1 - t2.V, 1 - t3.V);
+            }
+            else
+            {
+                t1 = new Uv();
+                t2 = t1;
+                t3 = t1;
+            }
+
+            if (state.AddVertex(v1))
+            {
+                state.VertexCount++;
+                FillBytes(state.VertexBuffers, v1v.ToArray());
+                if (hasNormal)
+                {
+                    state.NormalCount++;
+                    FillBytes(state.NormalBuffers, n1.ToArray());
+                }
+                if (hasUV)
+                {
+                    state.UvCount++;
+                    FillBytes(state.TextureBuffers, new Uv(t1.U, 1-t1.V).ToArray());
+                }
+            }
+
+            if (state.AddVertex(v2))
+            {
+                state.VertexCount++;
+                FillBytes(state.VertexBuffers, v2v.ToArray());
+                if (hasNormal)
+                {
+                    state.NormalCount++;
+                    FillBytes(state.NormalBuffers, n2.ToArray());
+                }
+                if (hasUV)
+                {
+                    state.UvCount++;
+                    FillBytes(state.TextureBuffers, new Uv(t2.U, 1 - t2.V).ToArray());
+                }
+            }
+
+            if (state.AddVertex(v3))
+            {
+                state.VertexCount++;
+                FillBytes(state.VertexBuffers, v3v.ToArray());
+                if (hasNormal)
+                {
+                    state.NormalCount++;
+                    FillBytes(state.NormalBuffers, n3.ToArray());
+                }
+                if (hasUV)
+                {
+                    state.UvCount++;
+                    FillBytes(state.TextureBuffers, new Uv(t3.U, 1 - t3.V).ToArray());
+                }
+            }
+
+        }
+
+        private static void FillBytes(List<byte> res, IList<float> vals)
+        {
+            foreach(var f in vals)
+            {
+                res.AddRange(BitConverter.GetBytes(f));
+            }
+        }
+
+        private void UpdateMinMax(MinMax mm, float v1, float v2, float? v3)
+        {
+            UpdateMinMax(mm, v1);
+            UpdateMinMax(mm, v2);
+            if (v3.HasValue)
+            {
+                UpdateMinMax(mm, v3.Value);
+            }
+        }
+
+        private void UpdateMinMax(MinMax mm, float v)
+        {
+            if (mm.Min > v)
+            {
+                mm.Min = v;
+            }
+            if (mm.Max < v)
+            {
+                mm.Max = v;
+            }
+        }
+
+        private Dictionary<int, string> GetPolygonMatDict(ObjModel objModel)
+        {
+            var dict = new Dictionary<int, string>();
+            foreach(var gd in objModel.Meshes)
+            {
+                var matName = gd.Key;
+                foreach(var rs in gd.Value.Polygons)
+                {
+                    for(var i = rs.Start; i < rs.End;i++)
+                    {
+                        dict.Add((int)i, matName);
+                    }
+                }
+            }
+            return dict;
+        }
+
+        private class MinMax
+        {
+            public float Min { get; set; } = float.MaxValue;
+
+            public float Max { get; set; } = float.MinValue;
+        }
+
+        private class PrimitiveState
+        {
+            public List<byte> VertexBuffers { get; } = new List<byte>();
+            public List<byte> NormalBuffers { get; } = new List<byte>();
+            public List<byte> TextureBuffers { get; } = new List<byte>();
+
+            public int VertexCount { get; set; }
+            public int NormalCount { get; set; }
+            public int UvCount { get; set; }
+
+            public bool ContainsVertex(PolygonVertex v)
+            {
+                return PolyVertexCache.ContainsKey(v);
+            }
+
+            public bool AddVertex(PolygonVertex v)
+            {
+                if (PolyVertexCache.ContainsKey(v))
+                {
+                    return false;
+                }
+                PolyVertexCache.Add(v, PolyVertextCount++);
+                return true;
+            }
+
+            public int PolyVertextCount { get; set; }
+            public Dictionary<PolygonVertex, int> PolyVertexCache { get; } = new Dictionary<PolygonVertex, int>();
+
+            public MinMax VertexXMM { get; } = new MinMax();
+            public MinMax VertexYMM { get; } = new MinMax();
+            public MinMax VertexZMM { get; } = new MinMax();
+
+            public MinMax NormalXMM { get; } = new MinMax();
+            public MinMax NormalYMM { get; } = new MinMax();
+            public MinMax NormalZMM { get; } = new MinMax();
+
+            public MinMax UvUMM { get; } = new MinMax();
+            public MinMax UvVMM { get; } = new MinMax();
+        }
+
+        private bool RequiresU32Indices(ObjModel objModel)
+        {
+            foreach (var g in objModel.Groups)
+            {
+                var node = g.Value;
+                foreach (var p in node.Polygons)
+                {
+                    for (var i = p.Start; i < p.End; i++)
+                    {
+                        var pp = objModel.Polygons[(int)i];
+                        var vertexCount = pp.Vertices.Count;
+                        if (vertexCount > 65534) // Reserve the 65535 index for primitive restart
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private int AddMaterial(Model gltf, string name, WaveFront.Material mtl)
@@ -279,27 +569,6 @@ namespace Obj2Gltf
             File.Copy(txtFile, newPath);
             _gltfTextureDict.Add(txtFile, uri);
             return uri;
-        }
-
-        private bool RequiresU32Indices(WaveFront.ObjModel objModel)
-        {
-            foreach(var g in objModel.Groups)
-            {
-                var node = g.Value;
-                foreach(var p in node.Polygons)
-                {
-                    for(var i = p.Start; i < p.End; i++)
-                    {
-                        var pp = objModel.Polygons[(int)i];
-                        var vertexCount = pp.Vertices.Count;
-                        if (vertexCount > 65534) // Reserve the 65535 index for primitive restart
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
         }
 
     }
