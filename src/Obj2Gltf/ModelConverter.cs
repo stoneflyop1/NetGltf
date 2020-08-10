@@ -19,6 +19,7 @@ namespace Obj2Gltf
         private readonly Dictionary<string, int> _textureDict = new Dictionary<string, int>();
         private readonly Dictionary<string, string> _gltfTextureDict = new Dictionary<string, string>();
         private readonly Dictionary<string, int> _matDict = new Dictionary<string, int>();
+        private readonly Buffers _buffers = new Buffers();
 
         public ModelConverter(string objFile, string gltfFile, ConverterOptions options)
         {
@@ -100,7 +101,7 @@ namespace Obj2Gltf
                 var faceIndex = 0;
                 foreach(var fd in faceList)
                 {
-                    var matId = fd.Key;
+                    var matIndex = fd.Key;
                     var polygons = fd.Value;
                     string faceName;
                     if (faceIndex > 0)
@@ -111,7 +112,8 @@ namespace Obj2Gltf
                     {
                         faceName = key;
                     }
-                    var p = new Primitive { Material = matId, Mode = new CheckedValue<Mode, int>(Mode.Triangles) };
+                    var p = new Primitive { Material = matIndex, Mode = new CheckedValue<Mode, int>(Mode.Triangles) };
+                    p.Attributes = new Dictionary<Semantic, int>();
                     var state = new PrimitiveState();
 
                     foreach (var pIndex in polygons)
@@ -126,7 +128,82 @@ namespace Obj2Gltf
                             //TODO:
                         }
                     }
+
+                    // Accessors
+                    // Position Accessors
+                    var accessorIndex = model.Accessors.Count;
+                    var accessorVertex = new Accessor
+                    {
+                        Min = new float[] { state.VertexXMM.Min, state.VertexYMM.Min, state.VertexZMM.Min },
+                        Max = new float[] { state.VertexXMM.Max, state.VertexYMM.Max, state.VertexZMM.Max },
+                        AccessorType = new CheckedValue<AccessorType, string>(AccessorType.VEC3),
+                        Count = state.VertexCount,
+                        ComponentType = new CheckedValue<ComponentType, int>(ComponentType.F32)
+                    };
+                    p.Attributes.Add(Semantic.POSITION, accessorIndex);
+                    model.Accessors.Add(accessorVertex);
+                    _buffers.Positions.Add(state.VertexBuffers);
+                    _buffers.PositionAccessors.Add(accessorIndex);
+                    // Normal Accessors
+                    if (state.NormalCount > 0)
+                    {
+                        accessorIndex = model.Accessors.Count;
+                        var accessorNormal = new Accessor
+                        {
+                            Min = new float[] { state.NormalXMM.Min, state.NormalYMM.Min, state.NormalZMM.Min },
+                            Max = new float[] { state.NormalXMM.Max, state.NormalYMM.Max, state.NormalZMM.Max },
+                            AccessorType = new CheckedValue<AccessorType, string>(AccessorType.VEC3),
+                            Count = state.NormalCount,
+                            ComponentType = new CheckedValue<ComponentType, int>(ComponentType.F32)
+                        };
+                        p.Attributes.Add(Semantic.NORMAL, accessorIndex);
+                        model.Accessors.Add(accessorNormal);
+                        _buffers.Normals.Add(state.NormalBuffers);
+                        _buffers.NormalAccessors.Add(accessorIndex);
+                    }
+                    // UV Accessors
+                    if (state.UvCount > 0)
+                    {
+                        accessorIndex = model.Accessors.Count;
+                        var accessorUV = new Accessor
+                        {
+                            Min = new float[] { state.UvUMM.Min, state.UvVMM.Min },
+                            Max = new float[] { state.UvUMM.Max, state.UvVMM.Max },
+                            AccessorType = new CheckedValue<AccessorType, string>(AccessorType.VEC2),
+                            ComponentType = new CheckedValue<ComponentType, int>(ComponentType.F32)
+                        };
+                        p.Attributes.Add(Semantic.TEXCOORD_0, accessorIndex);
+                        model.Accessors.Add(accessorUV);
+                        _buffers.Uvs.Add(state.TextureBuffers);
+                        _buffers.UvAccessors.Add(accessorIndex);
+                    }
+                    else
+                    {
+                        model.Materials[matIndex].PbrMetallicRoughness.BaseColorTexture = null;
+                    }
+                    // Index Accessors
+                    accessorIndex = model.Accessors.Count;
+                    var componentType = u32Indices ? ComponentType.U32 : ComponentType.U16;
+                    var mm = new MinMax();
+                    UpdateMinMax(mm, state.Indices);
+                    var accessor = new Accessor
+                    {
+                        Min = new float[] { mm.Min },
+                        Max = new float[] { mm.Max },
+                        AccessorType = new CheckedValue<AccessorType, string>(AccessorType.SCALAR),
+                        ComponentType = new CheckedValue<ComponentType, int>(componentType)
+                    };
+                    _buffers.Indices.Add(GetBytes(state.Indices, u32Indices));
+                    _buffers.IndexAccessors.Add(accessorIndex);
+                    p.Indices = accessorIndex;
+                    mesh.Primitives.Add(p);
                 }
+                var meshIndex = model.Meshes.Count;
+                model.Meshes.Add(mesh);
+                var nodeIndex = model.Nodes.Count;
+                var cNode = new Node { Name = key, Mesh = meshIndex };
+                model.Nodes.Add(cNode);
+                model.Scenes[0].Nodes.Add(nodeIndex);
             }
         }
 
@@ -234,6 +311,54 @@ namespace Obj2Gltf
                 }
             }
 
+            var correctWinding = CheckWindingCorrect(v1v, v2v, v3v, n1);
+            if (correctWinding)
+            {
+                state.Indices.AddRange(new[] { state.PolyVertexCache[v1], state.PolyVertexCache[v2], state.PolyVertexCache[v3] });
+            }
+            else
+            {
+                state.Indices.AddRange(new[] { state.PolyVertexCache[v1], state.PolyVertexCache[v3], state.PolyVertexCache[v2] });
+            }
+
+        }
+
+        private bool CheckWindingCorrect(Point a, Point b, Point c, Normal normal)
+        {
+            var (leftX, leftY, leftZ) = (b.X - a.X, b.Y - a.Y, b.Z - a.Z);
+            var (rightX, rightY, rightZ) = (c.X - a.X, c.Y - a.Y, c.Z - a.Z);
+            var cc = Cross(leftX, leftY, leftZ, rightX, rightY, rightZ);
+            return Dot(cc.x, cc.y, cc.z, normal.X, normal.Y, normal.Z) > 0;
+        }
+
+        private static (float x, float y, float z) Cross(float leftX, float leftY, float leftZ, float rightX, float rightY, float rightZ)
+        {
+            var x = leftY * rightZ - leftZ * rightY;
+            var y = leftZ * rightX - leftX * rightZ;
+            var z = leftX * rightY - leftY * rightX;
+            return (x,y,z);
+        }
+
+        private static float Dot(float leftX, float leftY, float leftZ, float rightX, float rightY, float rightZ)
+        {
+            return leftX * rightX + leftY * rightY + leftZ * rightZ;
+        }
+
+        private static List<byte> GetBytes(IList<int> indices, bool useU32)
+        {
+            var bytes = new List<byte>();
+            foreach(var i in indices)
+            {
+                if (useU32)
+                {
+                    bytes.AddRange(BitConverter.GetBytes((uint)i));
+                }
+                else
+                {
+                    bytes.AddRange(BitConverter.GetBytes((ushort)i));
+                }
+            }
+            return bytes;
         }
 
         private static void FillBytes(List<byte> res, IList<float> vals)
@@ -251,6 +376,21 @@ namespace Obj2Gltf
             if (v3.HasValue)
             {
                 UpdateMinMax(mm, v3.Value);
+            }
+        }
+
+        private void UpdateMinMax(MinMax mm, IList<int> indices)
+        {
+            foreach(var i in indices)
+            {
+                if (mm.Min > i)
+                {
+                    mm.Min = i;
+                }
+                if (mm.Max < i)
+                {
+                    mm.Max = i;
+                }
             }
         }
 
@@ -295,6 +435,7 @@ namespace Obj2Gltf
             public List<byte> VertexBuffers { get; } = new List<byte>();
             public List<byte> NormalBuffers { get; } = new List<byte>();
             public List<byte> TextureBuffers { get; } = new List<byte>();
+            public List<int> Indices { get; } = new List<int>();
 
             public int VertexCount { get; set; }
             public int NormalCount { get; set; }
@@ -328,6 +469,20 @@ namespace Obj2Gltf
 
             public MinMax UvUMM { get; } = new MinMax();
             public MinMax UvVMM { get; } = new MinMax();
+        }
+
+        private class Buffers
+        {
+            public List<List<byte>> Positions { get; } = new List<List<byte>>();
+            public List<List<byte>> Normals { get; } = new List<List<byte>>();
+            public List<List<byte>> Uvs { get; } = new List<List<byte>>();
+            public List<List<byte>> Indices { get; } = new List<List<byte>>();
+
+            public List<int> PositionAccessors { get; } = new List<int>();
+            public List<int> NormalAccessors { get; } = new List<int>();
+            public List<int> UvAccessors { get; } = new List<int>();
+            public List<int> IndexAccessors { get; } = new List<int>();
+
         }
 
         private bool RequiresU32Indices(ObjModel objModel)
