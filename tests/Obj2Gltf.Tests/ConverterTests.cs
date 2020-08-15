@@ -28,5 +28,18 @@ namespace Obj2Gltf.Tests
             Assert.NotNull(model);
             Assert.True(model.Materials.Count > 0);
         }
+
+        [Fact]
+        public void Converter_Obj_Tests()
+        {
+            var objFile = Path.Combine(LoaderTests.SampleRootPath, "model/model.obj");
+            var gltfFile = EnsureOuputPath(objFile);
+            var options = new ConverterOptions();
+            options.SeparateBinary = true;
+            var converter = new ModelConverter(objFile, gltfFile, options);
+            var model = converter.Run();
+            Assert.NotNull(model);
+            Assert.True(model.Materials.Count > 0);
+        }
     }
 }
