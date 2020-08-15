@@ -13,7 +13,10 @@ namespace NetGltf.Json
             _serde = new JsonSerializer
             {
                 ContractResolver = new ArrayContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+#if DEBUG
+                Formatting = Formatting.Indented
+#endif
             };
             _serde.Converters.Add(new IndexConverter());
             _serde.Converters.Add(new CheckedEnumConverter());

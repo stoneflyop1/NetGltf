@@ -6,6 +6,7 @@ using NetGltf.Json;
 using System.Linq;
 using Obj2Gltf.WaveFront;
 using Material = NetGltf.Json.Material;
+using NetGltf;
 
 namespace Obj2Gltf
 {
@@ -60,6 +61,9 @@ namespace Obj2Gltf
             }
 
             AddNodes(model, objModel);
+
+            var doc = Document.Create();
+            doc.WriteModel(model, _gltfFile);
 
             return model;
         }
@@ -121,9 +125,22 @@ namespace Obj2Gltf
                         var poly = objModel.Polygons[pIndex];
                         if (poly.Vertices.Count == 3)
                         {
-                            AddPolygon(p, state, model, objModel, poly);
+                            AddPolygon(p, state, objModel, poly);
                         }
-                        else if (poly.Vertices.Count > 3)
+                        else if (poly.Vertices.Count == 4)
+                        {
+                            var v1 = poly.Vertices[0];
+                            var v2 = poly.Vertices[1];
+                            var v3 = poly.Vertices[2];
+                            var v4 = poly.Vertices[3];
+                            var p1 = new Polygon();
+                            p1.Vertices.AddRange(new[] { v1, v2, v3 });
+                            AddPolygon(p, state, objModel, p1);
+                            var p2 = new Polygon();
+                            p2.Vertices.AddRange(new[] { v1, v3, v4 });
+                            AddPolygon(p, state, objModel, p2);
+                        }
+                        else if (poly.Vertices.Count > 4)
                         {
                             //TODO:
                         }
@@ -170,7 +187,8 @@ namespace Obj2Gltf
                             Min = new float[] { state.UvUMM.Min, state.UvVMM.Min },
                             Max = new float[] { state.UvUMM.Max, state.UvVMM.Max },
                             AccessorType = new CheckedValue<AccessorType, string>(AccessorType.VEC2),
-                            ComponentType = new CheckedValue<ComponentType, int>(ComponentType.F32)
+                            ComponentType = new CheckedValue<ComponentType, int>(ComponentType.F32),
+                            Count = state.UvCount
                         };
                         p.Attributes.Add(Semantic.TEXCOORD_0, accessorIndex);
                         model.Accessors.Add(accessorUV);
@@ -191,8 +209,10 @@ namespace Obj2Gltf
                         Min = new float[] { mm.Min },
                         Max = new float[] { mm.Max },
                         AccessorType = new CheckedValue<AccessorType, string>(AccessorType.SCALAR),
-                        ComponentType = new CheckedValue<ComponentType, int>(componentType)
+                        ComponentType = new CheckedValue<ComponentType, int>(componentType),
+                        Count = state.Indices.Count
                     };
+                    model.Accessors.Add(accessor);
                     _buffers.Indices.Add(GetBytes(state.Indices, u32Indices));
                     _buffers.IndexAccessors.Add(accessorIndex);
                     p.Indices = accessorIndex;
@@ -204,10 +224,110 @@ namespace Obj2Gltf
                 var cNode = new Node { Name = key, Mesh = meshIndex };
                 model.Nodes.Add(cNode);
                 model.Scenes[0].Nodes.Add(nodeIndex);
+                AddBuffers(model);
             }
         }
 
-        private void AddPolygon(Primitive p, PrimitiveState state, Model model, ObjModel objModel, Polygon poly)
+        private int GetCurrentByteOffset(Model model)
+        {
+            var byteOffset = 0;
+            var count = model.Buffers.Count;
+            if (count > 0)
+            {
+                for(var i = 0; i < count;i++)
+                {
+                    byteOffset += model.Buffers[i].ByteLength;
+                }
+            }
+            return byteOffset;
+        }
+
+        private int AddBuffer(Model model, IList<List<byte>> buffers, IList<int> accessors, string name, 
+            int byteOffset, int? byteStride, TargetType? target, int boundarySize = 4)
+        {
+            var bufferIndex = model.Buffers.Count;
+            var bufferList = buffers.SelectMany(c => c).ToList();
+            Padding(bufferList, boundarySize);
+            var posBuffer = new NetGltf.Json.Buffer
+            {
+                ByteLength = bufferList.Count
+            };
+            model.Buffers.Add(posBuffer);
+            if (_options.SeparateBinary)
+            {
+                var positionName = name+".bin";
+                File.WriteAllBytes(Path.Combine(_gltfFolder, positionName), bufferList.ToArray());
+                posBuffer.Uri = positionName;
+            }
+            else
+            {
+                posBuffer.Uri = "data:application/octet-stream;base64," + Convert.ToBase64String(bufferList.ToArray());
+            }
+            AddBufferView(model, buffers, accessors,
+                bufferIndex, byteOffset, byteStride, target);
+            byteOffset += posBuffer.ByteLength;
+            return byteOffset;
+        }
+
+        private void AddBuffers(Model model)
+        {
+            var byteOffset = 0; //GetCurrentByteOffset(model);
+
+            AddBuffer(model, _buffers.Positions, _buffers.PositionAccessors, "positions", byteOffset, 12, TargetType.ArrayBuffer);
+
+            if (_buffers.Normals.Count > 0)
+            {
+                AddBuffer(model, _buffers.Normals, _buffers.NormalAccessors, "normals", byteOffset, 12, TargetType.ArrayBuffer);
+            }
+            if (_buffers.Uvs.Count > 0)
+            {
+                AddBuffer(model, _buffers.Uvs, _buffers.UvAccessors, "uvs", byteOffset, 8, TargetType.ArrayBuffer);
+            }
+            AddBuffer(model, _buffers.Indices, _buffers.IndexAccessors, "indices", byteOffset, null, TargetType.ElementArrayBuffer);
+        }
+
+        private void AddBufferView(Model model, IList<List<byte>> buffers, IList<int> accessors, 
+            int bufferIndex, int byteOffset, int? byteStride, TargetType? target)
+        {
+            var byteLength = 0;
+            var bvIndex = model.BufferViews.Count;
+            for(var i = 0; i < buffers.Count;i++)
+            {
+                var accessor = model.Accessors[accessors[i]];
+                accessor.BufferView = bvIndex;
+                accessor.ByteOffset = byteLength;
+                byteLength += buffers[i].Count;
+            }
+            var bufferView = new BufferView
+            {
+                Name = "bv_" + bvIndex,
+                Buffer = bufferIndex,
+                ByteLength = byteLength,
+                ByteOffset = byteOffset,
+                ByetStride = byteStride
+            };
+            if (target.HasValue)
+            {
+                bufferView.Target = new CheckedValue<TargetType, int>(target.Value);
+            }
+            model.BufferViews.Add(bufferView);
+        }
+
+        private static void Padding(List<byte> buffer, int boundarySize)
+        {
+            var count = buffer.Count;
+            var res = count % boundarySize;
+            if (res != 0)
+            {
+                var padding = boundarySize - res;
+                for(var i = 0; i < padding; i++)
+                {
+                    buffer.Add(0);
+                }
+            }
+        }
+
+        private void AddPolygon(Primitive p, PrimitiveState state, ObjModel objModel, Polygon poly)
         {
             var v1 = poly.Vertices[0];
             var v2 = poly.Vertices[1];
@@ -236,6 +356,8 @@ namespace Obj2Gltf
                 n2 = objModel.Normals[n2Index];
                 n3 = objModel.Normals[n3Index];
                 UpdateMinMax(state.NormalXMM, n1.X, n2.X, n3.X);
+                UpdateMinMax(state.NormalYMM, n1.Y, n2.Y, n3.Y);
+                UpdateMinMax(state.NormalZMM, n1.Z, n2.Z, n3.Z);
             }
             else
             {
@@ -314,11 +436,13 @@ namespace Obj2Gltf
             var correctWinding = CheckWindingCorrect(v1v, v2v, v3v, n1);
             if (correctWinding)
             {
-                state.Indices.AddRange(new[] { state.PolyVertexCache[v1], state.PolyVertexCache[v2], state.PolyVertexCache[v3] });
+                state.Indices.AddRange(new[] { 
+                    state.PolyVertexCache[v1], state.PolyVertexCache[v2], state.PolyVertexCache[v3] });
             }
             else
             {
-                state.Indices.AddRange(new[] { state.PolyVertexCache[v1], state.PolyVertexCache[v3], state.PolyVertexCache[v2] });
+                state.Indices.AddRange(new[] { 
+                    state.PolyVertexCache[v1], state.PolyVertexCache[v3], state.PolyVertexCache[v2] });
             }
 
         }
@@ -331,7 +455,8 @@ namespace Obj2Gltf
             return Dot(cc.x, cc.y, cc.z, normal.X, normal.Y, normal.Z) > 0;
         }
 
-        private static (float x, float y, float z) Cross(float leftX, float leftY, float leftZ, float rightX, float rightY, float rightZ)
+        private static (float x, float y, float z) Cross(float leftX, float leftY, float leftZ, 
+            float rightX, float rightY, float rightZ)
         {
             var x = leftY * rightZ - leftZ * rightY;
             var y = leftZ * rightX - leftX * rightZ;
@@ -339,7 +464,8 @@ namespace Obj2Gltf
             return (x,y,z);
         }
 
-        private static float Dot(float leftX, float leftY, float leftZ, float rightX, float rightY, float rightZ)
+        private static float Dot(float leftX, float leftY, float leftZ, 
+            float rightX, float rightY, float rightZ)
         {
             return leftX * rightX + leftY * rightY + leftZ * rightZ;
         }
@@ -602,7 +728,7 @@ namespace Obj2Gltf
             }
 
             baseColorFactor.Add(1.0f);
-            var transparent = false;
+            bool transparent;
             if (IsValidTexture(alphaTexture))
             {
                 transparent = true;
@@ -618,6 +744,7 @@ namespace Obj2Gltf
             mat.PbrMetallicRoughness.BaseColorFactor = baseColorFactor.ToArray();
             mat.PbrMetallicRoughness.MetallicFactor = metallicFactor;
             mat.PbrMetallicRoughness.RoughnessFactor = roughnessFactor;
+            mat.EmissiveFactor = emissiveFactor;
 
             gltf.Materials.Add(mat);
 

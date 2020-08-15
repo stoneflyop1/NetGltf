@@ -45,7 +45,10 @@ namespace NetGltf
 
         public void WriteModel(Model model, string filePath)
         {
-            model.WriteUriFiles(filePath);
+            if (UriUtil.IsValidUri(model.Uri))
+            {
+                model.WriteUriFiles(filePath);
+            }
             JsonUtil.Serialize(model, filePath);
         }
     }
