@@ -17,3 +17,4 @@ git submodule add https://github.com/KhronosGroup/glTF-Sample-Models.git glTF-Sa
 - [A crate for loading glTF 2.0](https://github.com/gltf-rs/gltf/)
 - [Wavefront obj parser for Rust](https://github.com/simnalamburt/obj-rs)
 - [obj2gltf](https://github.com/CesiumGS/obj2gltf)
+- [The fastest and smallest JavaScript polygon triangulation library for your WebGL apps](https://github.com/mapbox/earcut)
