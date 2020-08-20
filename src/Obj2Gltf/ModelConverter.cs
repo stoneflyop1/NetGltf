@@ -143,6 +143,11 @@ namespace Obj2Gltf
                         else if (poly.Vertices.Count > 4)
                         {
                             //TODO:
+                            var polys = SplitPolygons(poly, objModel);
+                            foreach(var pp in polys)
+                            {
+                                AddPolygon(p, state, objModel, pp);
+                            }
                         }
                     }
 
@@ -226,6 +231,109 @@ namespace Obj2Gltf
                 model.Scenes[0].Nodes.Add(nodeIndex);
                 AddBuffers(model);
             }
+        }
+
+        private List<Polygon> SplitPolygons(Polygon poly, ObjModel objModel)
+        {
+            var count = poly.Vertices.Count;
+            float x = 0.0f, y = 0.0f, z = 0.0f;
+            float nx = 0.0f, ny = 0.0f, nz = 0.0f;
+            var hasNormal = poly.Vertices.Any(c => c.VN.HasValue);
+            for (var i = 0; i < count; i++)
+            {
+                var pv = poly.Vertices[i];
+                var pos = objModel.Positions[(int)pv.V - 1];
+                x += pos.X;
+                y += pos.Y;
+                z += pos.Z;
+                if (hasNormal)
+                {
+                    if (pv.VN.HasValue)
+                    {
+                        var normal = objModel.Normals[(int)pv.VN - 1];
+                        nx += normal.X;
+                        ny += normal.Y;
+                        nz += normal.Z;
+                    }
+                }
+                else if (i == 0)
+                {
+                    var pos2 = objModel.Positions[(int)poly.Vertices[i + 1].V - 1];
+                    var pos3 = objModel.Positions[(int)poly.Vertices[i + 2].V - 1];
+                    var x1 = pos2.X - pos.X; var y1 = pos2.Y - pos.Y; var z1 = pos2.Z - pos.Z;
+                    var x2 = pos3.X - pos2.X; var y2 = pos3.Y - pos2.Y; var z2 = pos3.Z - pos2.Z;
+                    var normal = Cross(x1, y1, z1, x2, y2, z2);
+                    nx += normal.x;
+                    ny += normal.y;
+                    nz += normal.z;
+                }
+            }
+            var nLen = GetLength(nx, ny, nz);
+            if (nLen > 0)
+            {
+                nx /= nLen;
+                ny /= nLen;
+                nz /= nLen;
+            }
+            var tol = 1e-6;
+            float[] positions = new float[poly.Vertices.Count * 2];
+            // https://stackoverflow.com/questions/9423621/3d-rotations-of-a-plane
+            var nx0 = 0.0f; var ny0 = 0.0f; var nz0 = 1.0f;
+            if (Math.Abs(nx-nx0) > tol || Math.Abs(ny-ny0) > tol || Math.Abs(nz-nz0) > tol)
+            {
+                var c = Dot(nx, ny, nz, nx0, ny0, nz0);
+                var axis = Cross(nx, ny, nz, nx0, ny0, nz0);
+                var s = (float)Math.Sqrt(1 - c * c);
+                var cc = 1 - c;
+                var m11 = axis.x * axis.x * cc + c;
+                var m12 = axis.x * axis.y * cc - axis.z * s;
+                var m13 = axis.x * axis.z * cc + axis.y * s;
+                var m21 = axis.y * axis.x * cc + axis.z * s;
+                var m22 = axis.y * axis.y * cc + c;
+                var m23 = axis.y * axis.z * cc - axis.x * s;
+                var m31 = axis.z * axis.x * cc - axis.y * s;
+                var m32 = axis.z * axis.y * cc + axis.x * s;
+                var m33 = axis.z * axis.z * cc + c;
+                for (var i = 0; i < count; i++)
+                {
+                    var pv = poly.Vertices[i];
+                    var pos = objModel.Positions[(int)pv.V - 1];
+                    var px = m11 * pos.X + m12 * pos.Y + m13 * pos.Z;
+                    var py = m21 * pos.X + m22 * pos.Y + m23 * pos.Z;
+                    var pz = m31 * pos.X + m32 * pos.Y + m33 * pos.Z;
+                    positions[i*2] = px;
+                    positions[i*2 + 1] = py;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    var pv = poly.Vertices[i];
+                    var pos = objModel.Positions[(int)pv.V - 1];
+                    positions[i*2] = pos.X;
+                    positions[i*2 + 1] = pos.Y;
+                }
+            }
+            var ps = new List<Polygon>();
+            var indices = EarCut.Triangulate(positions);
+            for(var i = 0; i < indices.Count; i += 3)
+            {
+                var pp = new Polygon();
+                var ii = indices[i];
+                var jj = indices[i + 1];
+                var kk = indices[i + 2];
+                pp.Vertices.Add(poly.Vertices[ii]);
+                pp.Vertices.Add(poly.Vertices[jj]);
+                pp.Vertices.Add(poly.Vertices[kk]);
+                ps.Add(pp);
+            }
+            return ps;
+        }
+
+        private static float GetLength(float x, float y, float z)
+        {
+            return (float)Math.Sqrt(x * x + y * y + z * z);
         }
 
         private int GetCurrentByteOffset(Model model)
