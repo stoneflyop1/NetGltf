@@ -12,7 +12,7 @@ namespace Obj2Gltf
         public static List<int> Triangulate(IList<float> data)
         {
             var dim = 2;
-            var hastHoles = false;
+            //var hastHoles = false;
             var outerLen = data.Count;
             var outerNode = LinkedList(data, 0, outerLen, dim, true);
             var triangles = new List<int>();

@@ -81,6 +81,7 @@ namespace Obj2Gltf
             }
             var node = new Node { Name = nodeName };
             model.Nodes.Add(node);
+            scene.Nodes.Add(0);
             var polyMatDict = GetPolygonMatDict(objModel);
             foreach (var gd in objModel.Groups)
             {
@@ -228,7 +229,7 @@ namespace Obj2Gltf
                 var nodeIndex = model.Nodes.Count;
                 var cNode = new Node { Name = key, Mesh = meshIndex };
                 model.Nodes.Add(cNode);
-                model.Scenes[0].Nodes.Add(nodeIndex);
+                node.Children.Add(nodeIndex);
                 AddBuffers(model);
             }
         }

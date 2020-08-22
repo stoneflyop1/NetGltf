@@ -2,11 +2,6 @@
 
 dotnet gltf tools and obj2gltf tool
 
-you can use below git command to download `glTF-Sample-Models`.
-
-```sh
-git submodule add https://github.com/KhronosGroup/glTF-Sample-Models.git glTF-Sample-Models
-```
 
 ![gltf json Structure](https://raw.githubusercontent.com/KhronosGroup/glTF-Tutorials/master/gltfTutorial/images/gltfJsonStructure.png)
 
