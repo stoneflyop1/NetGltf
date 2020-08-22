@@ -78,6 +78,7 @@ namespace Obj2Gltf
                             if (!String.IsNullOrEmpty(name))
                             {
                                 model.Materials.Add(name, mat);
+                                mat = new Material();
                             }
                             name = args[0];
                             break;

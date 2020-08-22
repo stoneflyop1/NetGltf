@@ -94,6 +94,9 @@ namespace NetGltf.Json
         [JsonProperty("baseColorTexture")]
         public TextureInfo BaseColorTexture { get; set; }
 
+        [JsonProperty("metallicRoughnessTexture")]
+        public TextureInfo MetallicRoughnessTexture { get; set; }
+
         /// <summary>
         /// The metalness of the material
         /// </summary>
