@@ -25,6 +25,7 @@ namespace Obj2Gltf.Tests
             var gltfFile = EnsureOuputPath(objFile);
             var options = new ConverterOptions();
             options.SeparateBinary = true;
+            options.SeparateTextures = true;
             var converter = new ModelConverter(objFile, gltfFile, options);
             var model = converter.Run();
             Assert.NotNull(model);
