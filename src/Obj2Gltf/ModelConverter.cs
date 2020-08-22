@@ -890,30 +890,58 @@ namespace Obj2Gltf
             {
                 return index;
             }
+            var name = Path.GetFileNameWithoutExtension(txtFile);
+            int imageIndex = -1;
             if (_options.SeparateTextures)
             {
                 var uri = CopyTextureFile(txtFile);
                 var image = new Image { 
-                    Name = Path.GetFileNameWithoutExtension(txtFile),
+                    Name = name,
                     Uri = uri,
                     MimeType = GetMimeType(txtFile)
                 };
-                var imageIndex = gltf.Images.Count;
+                imageIndex = gltf.Images.Count;
                 gltf.Images.Add(image);
-                var tIndex = gltf.Textures.Count;
-                gltf.Textures.Add(new Texture
-                {
-                    Source = imageIndex,
-                    Sampler = 0
-                });
-                _textureDict.Add(txtFile, tIndex);
-                return gltf.Textures.Count - 1;
+                
             }
             else //TODO:
             {
-
+                var imageBytes = new List<byte>(File.ReadAllBytes(txtFile));
+                var byteLength = imageBytes.Count;
+                Padding(imageBytes, 4);
+                var buffer = new NetGltf.Json.Buffer
+                {
+                    ByteLength = imageBytes.Count
+                };
+                buffer.Uri = "data:application/octet-stream;base64," + Convert.ToBase64String(imageBytes.ToArray());
+                var bufferIndex = gltf.Buffers.Count;
+                gltf.Buffers.Add(buffer);
+                var bufferView = new BufferView
+                {
+                    Name = name,
+                    Buffer = bufferIndex,
+                    ByteLength = byteLength,
+                    ByteOffset = 0
+                };
+                var bvIndex = gltf.BufferViews.Count;
+                gltf.BufferViews.Add(bufferView);
+                var image = new Image
+                {
+                    Name = name,
+                    BufferView = bvIndex,
+                    MimeType = GetMimeType(txtFile)
+                };
+                imageIndex = gltf.Images.Count;
+                gltf.Images.Add(image);
             }
-            return -1;
+            var tIndex = gltf.Textures.Count;
+            gltf.Textures.Add(new Texture
+            {
+                Source = imageIndex,
+                Sampler = 0
+            });
+            _textureDict.Add(txtFile, tIndex);
+            return gltf.Textures.Count - 1;
         }
 
         private static string GetMimeType(string imageFile)
