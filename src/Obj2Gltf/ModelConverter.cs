@@ -125,7 +125,7 @@ namespace Obj2Gltf
                         var poly = objModel.Polygons[pIndex];
                         if (poly.Vertices.Count == 3)
                         {
-                            AddPolygon(p, state, objModel, poly);
+                            AddPolygon(state, objModel, poly);
                         }
                         else if (poly.Vertices.Count == 4)
                         {
@@ -135,10 +135,10 @@ namespace Obj2Gltf
                             var v4 = poly.Vertices[3];
                             var p1 = new Polygon();
                             p1.Vertices.AddRange(new[] { v1, v2, v3 });
-                            AddPolygon(p, state, objModel, p1);
+                            AddPolygon(state, objModel, p1);
                             var p2 = new Polygon();
                             p2.Vertices.AddRange(new[] { v1, v3, v4 });
-                            AddPolygon(p, state, objModel, p2);
+                            AddPolygon(state, objModel, p2);
                         }
                         else if (poly.Vertices.Count > 4)
                         {
@@ -146,7 +146,7 @@ namespace Obj2Gltf
                             var polys = SplitPolygons(poly, objModel);
                             foreach(var pp in polys)
                             {
-                                AddPolygon(p, state, objModel, pp);
+                                AddPolygon(state, objModel, pp);
                             }
                         }
                     }
@@ -336,20 +336,6 @@ namespace Obj2Gltf
             return (float)Math.Sqrt(x * x + y * y + z * z);
         }
 
-        private int GetCurrentByteOffset(Model model)
-        {
-            var byteOffset = 0;
-            var count = model.Buffers.Count;
-            if (count > 0)
-            {
-                for(var i = 0; i < count;i++)
-                {
-                    byteOffset += model.Buffers[i].ByteLength;
-                }
-            }
-            return byteOffset;
-        }
-
         private int AddBuffer(Model model, IList<List<byte>> buffers, IList<int> accessors, string name, 
             int byteOffset, int? byteStride, TargetType? target, int boundarySize = 4)
         {
@@ -435,7 +421,7 @@ namespace Obj2Gltf
             }
         }
 
-        private void AddPolygon(Primitive p, PrimitiveState state, ObjModel objModel, Polygon poly)
+        private void AddPolygon(PrimitiveState state, ObjModel objModel, Polygon poly)
         {
             var v1 = poly.Vertices[0];
             var v2 = poly.Vertices[1];
@@ -806,6 +792,11 @@ namespace Obj2Gltf
             if (IsValidTexture(metallicTexture))
             {
                 metallicFactor = 1.0f;
+                var tIndex = ResolveTexture(gltf, metallicTexture);
+                mat.PbrMetallicRoughness.MetallicRoughnessTexture = new TextureInfo
+                {
+                    Index = tIndex
+                };
             }
             if (IsValidTexture(roughnessTexture))
             {
@@ -903,17 +894,19 @@ namespace Obj2Gltf
             {
                 var uri = CopyTextureFile(txtFile);
                 var image = new Image { 
-                    Name = Path.GetFileNameWithoutExtension(txtFile), 
+                    Name = Path.GetFileNameWithoutExtension(txtFile),
                     Uri = uri,
                     MimeType = GetMimeType(txtFile)
                 };
                 var imageIndex = gltf.Images.Count;
                 gltf.Images.Add(image);
+                var tIndex = gltf.Textures.Count;
                 gltf.Textures.Add(new Texture
                 {
                     Source = imageIndex,
                     Sampler = 0
                 });
+                _textureDict.Add(txtFile, tIndex);
                 return gltf.Textures.Count - 1;
             }
             else //TODO:
@@ -952,7 +945,7 @@ namespace Obj2Gltf
             {
                 return val;
             }
-            var newFilename = Path.GetFileNameWithoutExtension(txtFile) + DateTime.Now.ToString("HHmmssfff");
+            var newFilename = Path.GetFileNameWithoutExtension(txtFile).Replace(" ", "_") + DateTime.Now.ToString("HHmmssfff");
             var ext = txtFile.Substring(txtFile.LastIndexOf('.'));
             var uri = newFilename + ext;
             var newPath = Path.Combine(_gltfFolder, uri);
