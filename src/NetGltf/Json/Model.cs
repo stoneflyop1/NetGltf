@@ -63,6 +63,9 @@ namespace NetGltf.Json
         public List<string> ExtensionsUsed {get;set;}
         [JsonProperty("extensionsRequired")]
         public List<string> ExtensionsRequired {get;set;}
+
+        [JsonIgnore]
+        public List<byte> BinBuffers { get; set; }
     }
 
     public static class ModelExtensions

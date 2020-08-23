@@ -356,3 +356,6 @@ MigrationBackup/
 
 # f# tools
 .ionide
+
+# include sample files
+!objsamples/**/*.obj

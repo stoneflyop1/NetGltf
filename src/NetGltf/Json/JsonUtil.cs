@@ -8,6 +8,8 @@ namespace NetGltf.Json
     {
         private static readonly JsonSerializer _serde;
 
+        internal static readonly Encoding StrEncoding = new UTF8Encoding(false);
+
         static JsonUtil()
         {
             _serde = new JsonSerializer
@@ -40,9 +42,19 @@ namespace NetGltf.Json
             }
         }
 
+        public static string ToJson(object obj)
+        {
+            using(var sw = new StringWriter())
+            {
+                _serde.Serialize(sw, obj);
+                sw.Flush();
+                return sw.ToString();
+            }
+        }
+
         public static void Serialize(object obj, string jsonFile)
         {
-            using (var sw = new StreamWriter(jsonFile))
+            using (var sw = new StreamWriter(jsonFile, false, StrEncoding))
             {
                 _serde.Serialize(sw, obj);
                 sw.Flush();

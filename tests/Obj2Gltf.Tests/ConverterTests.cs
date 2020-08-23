@@ -8,9 +8,13 @@ namespace Obj2Gltf.Tests
 {
     public class ConverterTests
     {
-        internal static string EnsureOuputPath(string inputFile)
+        internal static string EnsureOuputPath(string inputFile, string newName = null)
         {
             var name = Path.GetFileNameWithoutExtension(inputFile);
+            if (!String.IsNullOrWhiteSpace(newName))
+            {
+                name = newName;
+            }
             var newFolder = Path.Combine(Path.GetTempPath(), name);
             if (!Directory.Exists(newFolder))
             {
@@ -39,6 +43,36 @@ namespace Obj2Gltf.Tests
             var gltfFile = EnsureOuputPath(objFile);
             var options = new ConverterOptions();
             options.SeparateBinary = true;
+            var converter = new ModelConverter(objFile, gltfFile, options);
+            var model = converter.Run();
+            Assert.NotNull(model);
+            Assert.True(model.Materials.Count > 0);
+        }
+
+        [Fact]
+        public void Converter_Obj_Tests2()
+        {
+            var objFile = Path.Combine(LoaderTests.SampleRootPath, "buildings/buildings.obj");
+            var gltfFile = EnsureOuputPath(objFile);
+            var options = new ConverterOptions();
+            options.SeparateBinary = true;
+            var converter = new ModelConverter(objFile, gltfFile, options);
+            var model = converter.Run();
+            Assert.NotNull(model);
+            Assert.True(model.Materials.Count > 0);
+        }
+
+        [Fact]
+        public void Converter_Obj_Tests3()
+        {
+            var objFile = Path.Combine(LoaderTests.SampleRootPath, "buildings/buildings.obj");
+            var gltfFile = EnsureOuputPath(objFile, "building_glb");
+            var options = new ConverterOptions();
+            options.GLB = true;
+            if (options.GLB)
+            {
+                gltfFile = Path.ChangeExtension(gltfFile, "glb");
+            }
             var converter = new ModelConverter(objFile, gltfFile, options);
             var model = converter.Run();
             Assert.NotNull(model);

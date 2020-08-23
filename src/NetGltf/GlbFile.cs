@@ -86,11 +86,28 @@ namespace NetGltf
 
     public class GlbHeader
     {
+        public static int ByteCount { get; } = 12;
+        public static GlbHeader GetGlbHeader(uint len)
+        {
+            return new GlbHeader
+            {
+                Magic = GlbConsts.Magic,
+                Version = GlbConsts.Version,
+                Length = len
+            };
+        }
         public uint Magic {get;set;}
 
         public uint Version {get;set;}
 
         public uint Length {get;set;}
+
+        internal void Write(BinaryWriter bw)
+        {
+            bw.Write(Magic);
+            bw.Write(Version);
+            bw.Write(Length);
+        }
 
         internal static GltfResult<GlbHeader> Parse(BinaryReader br)
         {
@@ -127,6 +144,12 @@ namespace NetGltf
 
         public ChunkType ChunkType {get;set;}
 
+        internal void Write(BinaryWriter bw)
+        {
+            bw.Write(Length);
+            bw.Write((uint)ChunkType);
+        }
+
         internal static GltfResult<ChunkHeader> Parse(BinaryReader br)
         {
             var length = br.ReadUInt32();
@@ -146,10 +169,10 @@ namespace NetGltf
         }
     }
 
-    public enum ChunkType
+    public enum ChunkType : uint
     {
-        Json,
-        Bin
+        Json = GlbConsts.JsonType,
+        Bin = GlbConsts.BinType
     }
 
     public static class GlbConsts

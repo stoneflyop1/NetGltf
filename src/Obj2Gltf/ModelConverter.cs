@@ -35,14 +35,6 @@ namespace Obj2Gltf
         {
             var model = new Model { Asset = new Asset() };
 
-            model.Samplers.Add(new Sampler
-            {
-                MagFilter = new CheckedValue<MagFilter, int>(MagFilter.Linear),
-                MinFilter = new CheckedValue<MinFilter, int>(MinFilter.NearestMipmapLinear),
-                WrapS = new CheckedValue<WrappingMode, int>(WrappingMode.Repeat),
-                WrapT = new CheckedValue<WrappingMode, int>(WrappingMode.Repeat)
-            });
-
             // parse obj files
             var objModel = ObjParser.Parse(_objFile);
             
@@ -59,8 +51,49 @@ namespace Obj2Gltf
                     _matDict.Add(matName, matIndex);
                 }
             }
+            if (_matDict.Count == 0)
+            {
+                // add default material
+                var mat = new Material();
+                mat.Name = "default";
+                mat.PbrMetallicRoughness = new PbrMetallicRoughness();
+                mat.DoubleSided = true;
+                mat.PbrMetallicRoughness.BaseColorFactor = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+                model.Materials.Add(mat);
+                _matDict.Add("default", 0);
+            }
 
             AddNodes(model, objModel);
+
+            if (_options.GLB)
+            {
+                model.BinBuffers = new List<byte>();
+                model.BinBuffers.AddRange(_buffers.Positions.SelectMany(c => c));
+                if (_buffers.Normals.Count > 0)
+                {
+                    model.BinBuffers.AddRange(_buffers.Normals.SelectMany(c => c));
+                }
+                if (_buffers.Uvs.Count > 0)
+                {
+                    model.BinBuffers.AddRange(_buffers.Uvs.SelectMany(c => c));
+                }
+                model.BinBuffers.AddRange(_buffers.Indices.SelectMany(c => c));
+                if (_buffers.ImageBuffers.Count > 0)
+                {
+                    model.BinBuffers.AddRange(_buffers.ImageBuffers.SelectMany(c => c));
+                }
+            }
+
+            if (model.Images.Count > 0)
+            {
+                model.Samplers.Add(new Sampler
+                {
+                    MagFilter = new CheckedValue<MagFilter, int>(MagFilter.Linear),
+                    MinFilter = new CheckedValue<MinFilter, int>(MinFilter.NearestMipmapLinear),
+                    WrapS = new CheckedValue<WrappingMode, int>(WrappingMode.Repeat),
+                    WrapT = new CheckedValue<WrappingMode, int>(WrappingMode.Repeat)
+                });
+            }
 
             var doc = Document.Create();
             doc.WriteModel(model, _gltfFile);
@@ -230,8 +263,8 @@ namespace Obj2Gltf
                 var cNode = new Node { Name = key, Mesh = meshIndex };
                 model.Nodes.Add(cNode);
                 node.Children.Add(nodeIndex);
-                AddBuffers(model);
             }
+            AddBuffers(model);
         }
 
         private List<Polygon> SplitPolygons(Polygon poly, ObjModel objModel)
@@ -342,41 +375,52 @@ namespace Obj2Gltf
         {
             var bufferIndex = model.Buffers.Count;
             var bufferList = buffers.SelectMany(c => c).ToList();
-            Padding(bufferList, boundarySize);
-            var posBuffer = new NetGltf.Json.Buffer
+            var bufferLength = bufferList.Count;
+            if (!_options.GLB)
             {
-                ByteLength = bufferList.Count
-            };
-            model.Buffers.Add(posBuffer);
-            if (_options.SeparateBinary)
-            {
-                var positionName = name+".bin";
-                File.WriteAllBytes(Path.Combine(_gltfFolder, positionName), bufferList.ToArray());
-                posBuffer.Uri = positionName;
+                Document.Padding(bufferList, boundarySize);
+                var buffer = new NetGltf.Json.Buffer
+                {
+                    ByteLength = bufferLength
+                };
+                model.Buffers.Add(buffer);
+                if (_options.SeparateBinary)
+                {
+                    var binName = name + ".bin";
+                    File.WriteAllBytes(Path.Combine(_gltfFolder, binName), bufferList.ToArray());
+                    buffer.Uri = binName;
+                }
+                else
+                {
+                    buffer.Uri = "data:application/octet-stream;base64," + Convert.ToBase64String(bufferList.ToArray());
+                }
             }
             else
             {
-                posBuffer.Uri = "data:application/octet-stream;base64," + Convert.ToBase64String(bufferList.ToArray());
+                _buffers.ByteOffset += bufferLength;
             }
+
             AddBufferView(model, buffers, accessors,
                 bufferIndex, byteOffset, byteStride, target);
-            byteOffset += posBuffer.ByteLength;
+            byteOffset += bufferLength;
             return byteOffset;
         }
 
         private void AddBuffers(Model model)
         {
-            var byteOffset = 0; //GetCurrentByteOffset(model);
+            var byteOffset = _buffers.ByteOffset;
 
             AddBuffer(model, _buffers.Positions, _buffers.PositionAccessors, "positions", byteOffset, 12, TargetType.ArrayBuffer);
-
+            byteOffset = _buffers.ByteOffset;
             if (_buffers.Normals.Count > 0)
             {
                 AddBuffer(model, _buffers.Normals, _buffers.NormalAccessors, "normals", byteOffset, 12, TargetType.ArrayBuffer);
+                byteOffset = _buffers.ByteOffset;
             }
             if (_buffers.Uvs.Count > 0)
             {
                 AddBuffer(model, _buffers.Uvs, _buffers.UvAccessors, "uvs", byteOffset, 8, TargetType.ArrayBuffer);
+                byteOffset = _buffers.ByteOffset;
             }
             AddBuffer(model, _buffers.Indices, _buffers.IndexAccessors, "indices", byteOffset, null, TargetType.ElementArrayBuffer);
         }
@@ -408,19 +452,6 @@ namespace Obj2Gltf
             model.BufferViews.Add(bufferView);
         }
 
-        private static void Padding(List<byte> buffer, int boundarySize)
-        {
-            var count = buffer.Count;
-            var res = count % boundarySize;
-            if (res != 0)
-            {
-                var padding = boundarySize - res;
-                for(var i = 0; i < padding; i++)
-                {
-                    buffer.Add(0);
-                }
-            }
-        }
 
         private void AddPolygon(PrimitiveState state, ObjModel objModel, Polygon poly)
         {
@@ -694,15 +725,34 @@ namespace Obj2Gltf
 
         private class Buffers
         {
+            /// <summary>
+            /// 0
+            /// </summary>
             public List<List<byte>> Positions { get; } = new List<List<byte>>();
+            /// <summary>
+            /// 1
+            /// </summary>
             public List<List<byte>> Normals { get; } = new List<List<byte>>();
+            /// <summary>
+            /// 2
+            /// </summary>
             public List<List<byte>> Uvs { get; } = new List<List<byte>>();
+            /// <summary>
+            /// 3
+            /// </summary>
             public List<List<byte>> Indices { get; } = new List<List<byte>>();
-
             public List<int> PositionAccessors { get; } = new List<int>();
             public List<int> NormalAccessors { get; } = new List<int>();
             public List<int> UvAccessors { get; } = new List<int>();
             public List<int> IndexAccessors { get; } = new List<int>();
+            /// <summary>
+            /// 4
+            /// </summary>
+            public List<byte[]> ImageBuffers { get; } = new List<byte[]>();
+            /// <summary>
+            ///  used when save as glb
+            /// </summary>
+            public int ByteOffset { get; set; }
 
         }
 
@@ -893,7 +943,31 @@ namespace Obj2Gltf
             }
             var name = Path.GetFileNameWithoutExtension(txtFile);
             int imageIndex = -1;
-            if (_options.SeparateTextures)
+            if (_options.GLB)
+            {
+                var bytes = File.ReadAllBytes(txtFile);
+                _buffers.ImageBuffers.Add(bytes);
+                var bufferIndex = 0;
+                var bufferView = new BufferView
+                {
+                    Name = name,
+                    Buffer = bufferIndex,
+                    ByteLength = bytes.Length,
+                    ByteOffset = _buffers.ByteOffset
+                };
+                var bvIndex = gltf.BufferViews.Count;
+                gltf.BufferViews.Add(bufferView);
+                var image = new Image
+                {
+                    Name = name,
+                    BufferView = bvIndex,
+                    MimeType = GetMimeType(txtFile)
+                };
+                imageIndex = gltf.Images.Count;
+                gltf.Images.Add(image);
+                _buffers.ByteOffset += bytes.Length;
+            }
+            else if (_options.SeparateTextures)
             {
                 var uri = CopyTextureFile(txtFile);
                 var image = new Image { 
@@ -905,11 +979,11 @@ namespace Obj2Gltf
                 gltf.Images.Add(image);
                 
             }
-            else //TODO:
+            else
             {
                 var imageBytes = new List<byte>(File.ReadAllBytes(txtFile));
                 var byteLength = imageBytes.Count;
-                Padding(imageBytes, 4);
+                Document.Padding(imageBytes, 4);
                 var buffer = new NetGltf.Json.Buffer
                 {
                     ByteLength = imageBytes.Count
