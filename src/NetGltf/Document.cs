@@ -45,6 +45,19 @@ namespace NetGltf
             }
         }
 
+        public static void PaddingSpace(List<byte> buffer, int boundarySize)
+        {
+            var count = buffer.Count;
+            var res = count % boundarySize;
+            if (res != 0)
+            {
+                var padding = boundarySize - res;
+                for (var i = 0; i < padding; i++)
+                {
+                    buffer.Add(0x20);
+                }
+            }
+        }
         public static void Padding(List<byte> buffer, int boundarySize)
         {
             var count = buffer.Count;
@@ -87,7 +100,7 @@ namespace NetGltf
                     }
                     var json = JsonUtil.ToJson(model);
                     var jsonBytes = new List<byte>(JsonUtil.StrEncoding.GetBytes(json));
-                    Padding(jsonBytes, 4);
+                    PaddingSpace(jsonBytes, 4);
                     var len = GlbHeader.ByteCount + jsonBytes.Count + binCount + 8 + (binCount > 0 ? 8 : 0);
                     var header = GlbHeader.GetGlbHeader((uint)len);
                     header.Write(bw);

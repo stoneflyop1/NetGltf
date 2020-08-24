@@ -37,6 +37,26 @@ namespace Obj2Gltf.Tests
         }
 
         [Fact]
+        public void Converter_GLB_Tests()
+        {
+            var objFile = Path.Combine(LoaderTests.SampleRootPath, "plants/indoor plant_02.obj");
+            var gltfFile = EnsureOuputPath(objFile, "plant_glb");
+            var options = new ConverterOptions();
+            options.GLB = true;
+            if (options.GLB)
+            {
+                gltfFile = Path.ChangeExtension(gltfFile, "glb");
+            }
+            if (File.Exists(gltfFile)) {
+                File.Delete(gltfFile);
+            }
+            var converter = new ModelConverter(objFile, gltfFile, options);
+            var model = converter.Run();
+            Assert.NotNull(model);
+            Assert.True(model.Materials.Count > 0);
+        }
+
+        [Fact]
         public void Converter_Obj_Tests()
         {
             var objFile = Path.Combine(LoaderTests.SampleRootPath, "model/model.obj");
@@ -63,7 +83,7 @@ namespace Obj2Gltf.Tests
         }
 
         [Fact]
-        public void Converter_Obj_Tests3()
+        public void Converter_GLB_Tests3()
         {
             var objFile = Path.Combine(LoaderTests.SampleRootPath, "buildings/buildings.obj");
             var gltfFile = EnsureOuputPath(objFile, "building_glb");

@@ -68,6 +68,10 @@ namespace Obj2Gltf
             if (_options.GLB)
             {
                 model.BinBuffers = new List<byte>();
+                if (_buffers.ImageBuffers.Count > 0)
+                {
+                    model.BinBuffers.AddRange(_buffers.ImageBuffers.SelectMany(c => c));
+                }
                 model.BinBuffers.AddRange(_buffers.Positions.SelectMany(c => c));
                 if (_buffers.Normals.Count > 0)
                 {
@@ -78,10 +82,6 @@ namespace Obj2Gltf
                     model.BinBuffers.AddRange(_buffers.Uvs.SelectMany(c => c));
                 }
                 model.BinBuffers.AddRange(_buffers.Indices.SelectMany(c => c));
-                if (_buffers.ImageBuffers.Count > 0)
-                {
-                    model.BinBuffers.AddRange(_buffers.ImageBuffers.SelectMany(c => c));
-                }
             }
 
             if (model.Images.Count > 0)
@@ -948,6 +948,7 @@ namespace Obj2Gltf
                 var bytes = File.ReadAllBytes(txtFile);
                 _buffers.ImageBuffers.Add(bytes);
                 var bufferIndex = 0;
+                var bvIndex = gltf.BufferViews.Count;
                 var bufferView = new BufferView
                 {
                     Name = name,
@@ -955,7 +956,6 @@ namespace Obj2Gltf
                     ByteLength = bytes.Length,
                     ByteOffset = _buffers.ByteOffset
                 };
-                var bvIndex = gltf.BufferViews.Count;
                 gltf.BufferViews.Add(bufferView);
                 var image = new Image
                 {
@@ -977,7 +977,6 @@ namespace Obj2Gltf
                 };
                 imageIndex = gltf.Images.Count;
                 gltf.Images.Add(image);
-                
             }
             else
             {
