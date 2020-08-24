@@ -42,7 +42,10 @@ namespace Obj2Gltf.WaveFront
         /// fo | f
         /// </summary>
         public List<Polygon> Polygons { get; } = new List<Polygon>();
-
+        /// <summary>
+        /// o
+        /// </summary>
+        public Dictionary<string, Group> Objects {get; internal set;}
         /// <summary>
         /// g
         /// </summary>
@@ -51,6 +54,22 @@ namespace Obj2Gltf.WaveFront
         /// usemtl
         /// </summary>
         public Dictionary<string, Group> Meshes { get; internal set; }
+
+        public Dictionary<string, Group> GetGroups()
+        {
+            var gCount = 0;
+            if (Groups.Count > 0) { 
+                gCount = Groups.Count;
+            }
+            var oCount = 0;
+            if (Objects.Count > 0) {
+                oCount = Objects.Count;
+            }
+            if (gCount >= oCount) { 
+                return Groups;
+            }
+            return Objects;
+        }
 
         public Counter CurrentCounter
         {

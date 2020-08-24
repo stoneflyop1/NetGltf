@@ -116,7 +116,7 @@ namespace Obj2Gltf
             model.Nodes.Add(node);
             scene.Nodes.Add(0);
             var polyMatDict = GetPolygonMatDict(objModel);
-            foreach (var gd in objModel.Groups)
+            foreach (var gd in objModel.GetGroups())
             {
                 var key = gd.Key;
                 var g = gd.Value;

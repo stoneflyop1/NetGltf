@@ -71,6 +71,7 @@ namespace Obj2Gltf
                 var nameBuilder = new StringBuilder();
                 var model = new ObjModel();
                 var groupBuilder = model.GetMapBuilder("default");
+                var objectBuilder = model.GetMapBuilder("default");
                 var meshBuilder = model.GetMapBuilder("");
                 TextParser.Lex(sr, (key, args) =>
                 {
@@ -114,13 +115,23 @@ namespace Obj2Gltf
                             args = TextParser.ParseArgs(args);
                             groupBuilder.Start(args[0]);
                             break;
+                            case "o":
+                            args = TextParser.ParseArgs(args);
+                            objectBuilder.Start(args[0]);
+                            if(String.IsNullOrEmpty(model.Name))
+                            {
+                                model.Name = args[0];
+                            }
+                            break;
                         case "usemtl":
                             meshBuilder.Start(args[0]);
                             break;
                     }
                 });
+                objectBuilder.End();
                 groupBuilder.End();
                 meshBuilder.End();
+                model.Objects = objectBuilder.Result;
                 model.Groups = groupBuilder.Result;
                 model.Meshes = meshBuilder.Result;
 
