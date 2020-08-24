@@ -88,7 +88,7 @@ namespace NetGltf
                     var json = JsonUtil.ToJson(model);
                     var jsonBytes = new List<byte>(JsonUtil.StrEncoding.GetBytes(json));
                     Padding(jsonBytes, 4);
-                    var len = GlbHeader.ByteCount + jsonBytes.Count + binCount;
+                    var len = GlbHeader.ByteCount + jsonBytes.Count + binCount + 8 + (binCount > 0 ? 8 : 0);
                     var header = GlbHeader.GetGlbHeader((uint)len);
                     header.Write(bw);
                     var jsonChunk = new ChunkHeader

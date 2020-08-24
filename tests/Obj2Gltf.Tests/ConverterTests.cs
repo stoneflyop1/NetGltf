@@ -73,6 +73,9 @@ namespace Obj2Gltf.Tests
             {
                 gltfFile = Path.ChangeExtension(gltfFile, "glb");
             }
+            if (File.Exists(gltfFile)) {
+                File.Delete(gltfFile);
+            }
             var converter = new ModelConverter(objFile, gltfFile, options);
             var model = converter.Run();
             Assert.NotNull(model);
