@@ -5,8 +5,17 @@ using Newtonsoft.Json;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// checked enum value from string or integer
+    /// </summary>
+    /// <typeparam name="TEnum"></typeparam>
+    /// <typeparam name="TVal"></typeparam>
     public struct CheckedValue<TEnum, TVal> where TEnum : struct, Enum
     {
+        /// <summary>
+        /// from enum
+        /// </summary>
+        /// <param name="enum"></param>
         public CheckedValue(TEnum @enum)
         {
             _value = @enum;
@@ -20,6 +29,10 @@ namespace NetGltf.Json
             }
             IsValid = true;
         }
+        /// <summary>
+        /// from string or integer
+        /// </summary>
+        /// <param name="val"></param>
         public CheckedValue(object val)
         {
             Value = val;
@@ -34,9 +47,12 @@ namespace NetGltf.Json
                 }
             }
             else {
-                _value = default(TEnum);
+                _value = default;
             }
         }
+        /// <summary>
+        /// string/integer value
+        /// </summary>
         public object Value {get; private set;}
         /// <summary>
         /// If not valid, throws InvalidOperationException
@@ -50,38 +66,67 @@ namespace NetGltf.Json
             }
             return _value;
         }
-
+        /// <summary>
+        /// whether value can be converted to a valid enum
+        /// </summary>
         public bool IsValid {get; private set;}
 
         private TEnum _value;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return Value.ToString();
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public enum ValidationErrorKind
     {
+        /// <summary>
+        /// 
+        /// </summary>
         IndexOutOfBounds,
         /// <summary>
         /// Invalid value found
         /// </summary>
         Invalid,
+        /// <summary>
+        /// 
+        /// </summary>
         Missing
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class ValidationError
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="kind"></param>
+        /// <param name="path"></param>
         public ValidationError(ValidationErrorKind kind, string path)
         {
             Kind = kind;
             Path = path;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public ValidationErrorKind Kind { get;  }
-
+        /// <summary>
+        /// json path
+        /// </summary>
         public string Path { get;  }
 
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ModelValidationExtensions
     {
         private static bool IsDefined<TEnum>(TEnum @enum) where TEnum: struct
@@ -104,12 +149,8 @@ namespace NetGltf.Json
                                 ValidationErrorKind.IndexOutOfBounds, $"bufferView_{i}_buffer"));
                         }
                     }
-                    //else
-                    //{
-                    //    errors.Add(new ValidationError(ValidationErrorKind.Missing, $"bufferView_{i}"));
-                    //}
 
-                    if (view.Target != null && !view.Target.Value.IsValid)//(view.Target != null && !IsDefined(view.Target.Value))
+                    if (view.Target != null && !view.Target.Value.IsValid)
                     {
                         errors.Add(new ValidationError(
                                 ValidationErrorKind.Invalid, $"bufferView_{i}_target"));
@@ -134,10 +175,6 @@ namespace NetGltf.Json
                                 ValidationErrorKind.IndexOutOfBounds, $"accessor_{i}_bufferview"));
                         }
                     }
-                    //else
-                    //{
-                    //    errors.Add(new ValidationError(ValidationErrorKind.Missing, $"accessor_{i}"));
-                    //}
 
                     if (!acc.ComponentType.IsValid)
                     {
@@ -145,7 +182,7 @@ namespace NetGltf.Json
                                 ValidationErrorKind.Invalid, $"accessor_{i}_componenttype"));
                     }
 
-                    if (!acc.AccessorType.IsValid)//(!IsDefined(acc.AccessorType))
+                    if (!acc.AccessorType.IsValid)
                     {
                         errors.Add(new ValidationError(
                                 ValidationErrorKind.Invalid, $"accessor_{i}_accessortype"));
@@ -164,7 +201,7 @@ namespace NetGltf.Json
                                         ValidationErrorKind.IndexOutOfBounds, $"accessor_{i}_sparse_index_bufferview"));
                                 }
                             }
-                            if (!acc.Sparse.Indices.ComponentType.IsValid)//(!IsDefined(acc.Sparse.Indices.ComponentType))
+                            if (!acc.Sparse.Indices.ComponentType.IsValid)
                             {
                                 errors.Add(new ValidationError(
                                 ValidationErrorKind.Invalid, $"accessor_{i}_sparse_index_componenttype"));
@@ -243,7 +280,7 @@ namespace NetGltf.Json
                                                 errors.Add(new ValidationError(
                                                     ValidationErrorKind.IndexOutOfBounds,
                                                     $"mesh_{i}_primitive_{j}_target_{k}_normal"));
-                                            }                                            
+                                            }
                                         }
                                         if (tt.Positions != null)
                                         {
@@ -270,7 +307,7 @@ namespace NetGltf.Json
                                 
                             }
 
-                            if (p.Mode != null && !p.Mode.Value.IsValid)//(!IsDefined(p.Mode))
+                            if (p.Mode != null && !p.Mode.Value.IsValid)
                             {
                                 errors.Add(new ValidationError(
                                             ValidationErrorKind.Invalid,
@@ -363,7 +400,7 @@ namespace NetGltf.Json
                                         ValidationErrorKind.IndexOutOfBounds, $"node_{i}_skin"));
                                 }
                             }
-                        }                       
+                        }
 
                     }
                 }
@@ -497,7 +534,7 @@ namespace NetGltf.Json
                         }
                     }
 
-                    if (mat.AlphaMode != null && !mat.AlphaMode.Value.IsValid)//(!IsDefined(mat.AlphaMode))
+                    if (mat.AlphaMode != null && !mat.AlphaMode.Value.IsValid)
                     {
                         errors.Add(new ValidationError(
                                     ValidationErrorKind.Invalid, $"material_{i}_alphamode_{mat.AlphaMode.ToString()}"));
@@ -525,7 +562,6 @@ namespace NetGltf.Json
                                     ValidationErrorKind.IndexOutOfBounds, $"texture_{i}_sampler"));
                             }
                         }
-                        
                     }
                     if (t.Source != null)
                     {
@@ -538,7 +574,7 @@ namespace NetGltf.Json
                                     ValidationErrorKind.IndexOutOfBounds, $"texture_{i}_image"));
                             }
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -611,9 +647,9 @@ namespace NetGltf.Json
                                                 ValidationErrorKind.IndexOutOfBounds, 
                                                 $"animation_{i}_channel_{j}_target_node"));
                                         }
-                                    }                                    
+                                    }
                                 }
-                                if (!c.Target.Path.IsValid)//(!IsDefined(c.Target.Path))
+                                if (!c.Target.Path.IsValid)
                                 {
                                     errors.Add(new ValidationError(
                                                 ValidationErrorKind.Invalid,
@@ -650,7 +686,7 @@ namespace NetGltf.Json
                                             $"animation_{i}_sampler_{j}_output_accessor"));
                                     }
                                 }
-                                if (!s.Interpolation.IsValid)//(!IsDefined(s.Interpolation))
+                                if (!s.Interpolation.IsValid)
                                 {
                                     errors.Add(new ValidationError(
                                             ValidationErrorKind.IndexOutOfBounds,
@@ -663,7 +699,11 @@ namespace NetGltf.Json
                 }
             }
         }
-
+        /// <summary>
+        /// validate glTF model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public static List<ValidationError> Validate(this Model model)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));

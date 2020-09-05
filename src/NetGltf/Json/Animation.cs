@@ -4,19 +4,36 @@ using Newtonsoft.Json.Converters;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// A keyframe animation.
+    /// </summary>
     public class Animation
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
+        /// <summary>
+        /// An array of channels, each of which targets an animation's sampler at a
+        /// node's property.
+        ///
+        /// Different channels of the same animation must not have equal targets.
+        /// </summary>
 
         [JsonProperty("channels")]
         public List<Channel> Channels { get; set; }
+        /// <summary>
+        /// An array of samplers that combine input and output accessors with an
+        /// interpolation algorithm to define a keyframe graph (but not its target).
+        /// </summary>
 
         [JsonProperty("samplers")]
         public List<AnimationSampler> Samplers { get; set; }
     }
-
+    /// <summary>
+    /// Targets an animation's sampler at a node's property.
+    /// </summary>
     public class Channel
     {
         /// <summary>
@@ -31,7 +48,9 @@ namespace NetGltf.Json
         public Target Target { get; set; }
 
     }
-
+    /// <summary>
+    /// The index of the node and TRS property that an animation channel targets.
+    /// </summary>
     public class Target
     {
 
@@ -48,7 +67,9 @@ namespace NetGltf.Json
         //[JsonConverter(typeof(StringEnumConverter), true)]
         public CheckedValue<TargetProperty,string> Path { get; set; }
     }
-
+    /// <summary>
+    /// Specifies a property to animate.
+    /// </summary>
     public enum TargetProperty
     {
         /// <summary>
@@ -68,7 +89,9 @@ namespace NetGltf.Json
         /// </summary>
         Weights
     }
-
+    /// <summary>
+    /// Specifies an interpolation algorithm.
+    /// </summary>
     public enum Interpolation
     {
         /// <summary>
@@ -109,7 +132,9 @@ namespace NetGltf.Json
         /// </summary>
         CUBICSPLINE,
     }
-
+    /// <summary>
+    /// Defines a keyframe graph but not its target.
+    /// </summary>
     public class AnimationSampler
     {
         /// <summary>
@@ -122,7 +147,9 @@ namespace NetGltf.Json
         /// </summary>
         [JsonProperty("output")]
         public Index<Accessor> Output { get; set; }
-
+        /// <summary>
+        /// The interpolation algorithm.
+        /// </summary>
         [JsonProperty("interpolation")]
         //[JsonConverter(typeof(StringEnumConverter))]
         public CheckedValue<Interpolation, string> Interpolation { get; set; }

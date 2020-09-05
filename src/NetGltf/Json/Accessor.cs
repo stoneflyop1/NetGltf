@@ -3,17 +3,31 @@ using Newtonsoft.Json.Converters;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// A typed view into a buffer view.
+    /// </summary>
     public class Accessor
     {
+        /// <summary>
+        /// The parent buffer view this accessor reads from.
+        ///
+        /// This field can be omitted in sparse accessors.
+        /// </summary>
         [JsonProperty("bufferView")]
         public Index<BufferView> BufferView { get; set; }
-
+        /// <summary>
+        /// The offset relative to the start of the parent `BufferView` in bytes.
+        /// </summary>
         [JsonProperty("byteOffset")]
         public int ByteOffset { get; set; }
-
+        /// <summary>
+        /// The data type of components in the attribute
+        /// </summary>
         [JsonProperty("componentType")]
         public CheckedValue<ComponentType, int> ComponentType { get; set; }
-
+        /// <summary>
+        /// The number of components within the buffer view
+        /// </summary>
         [JsonProperty("count")]
         public int Count { get; set; }
         /// <summary>
@@ -28,9 +42,10 @@ namespace NetGltf.Json
         [JsonProperty("max")]
         [JsonConverter(typeof(FloatArrayJsonConverter))]
         public float[] Max { get; set; }
-
+        /// <summary>
+        /// Specifies if the attribute is a scalar, vector, or matrix.
+        /// </summary>
         [JsonProperty("type")]
-        //[JsonConverter(typeof(StringEnumConverter))]
         public CheckedValue<AccessorType, string> AccessorType { get; set; }
 
         /// <summary>
@@ -39,7 +54,9 @@ namespace NetGltf.Json
         [JsonProperty("sparse")]
         public SparsedAccessor Sparse { get; set; }
     }
-
+    /// <summary>
+    /// Sparse storage of attributes that deviate from their initialization value.
+    /// </summary>
     public class SparsedAccessor
     {
         /// <summary>
@@ -60,24 +77,47 @@ namespace NetGltf.Json
         /// </summary>
         [JsonProperty("values")]
         public SparseValues Values { get; set; }
-
+        /// <summary>
+        /// Array of size `count * number_of_components` storing the displaced
+        /// accessor attributes pointed by `accessor.sparse.Indices`.
+        /// </summary>
         public class SparseValues
         {
+            /// <summary>
+            /// The parent buffer view containing the sparse indices.
+            ///
+            /// The referenced buffer view must not have `ARRAY_BUFFER` nor
+            /// `ELEMENT_ARRAY_BUFFER` as its target.
+            /// </summary>
             [JsonProperty("bufferView")]
             public Index<BufferView> BufferView { get; set; }
-
+            /// <summary>
+            /// The offset relative to the start of the parent buffer view in bytes.
+            /// </summary>
             [JsonProperty("byteOffset")]
             public int ByteOffset { get; set; }
         }
-
+        /// <summary>
+        /// Indices of those attributes that deviate from their initialization value.
+        /// </summary>
         public class SparseIndices
         {
+            /// <summary>
+            /// The parent buffer view containing the sparse indices.
+            ///
+            /// The referenced buffer view must not have `ARRAY_BUFFER` nor
+            /// `ELEMENT_ARRAY_BUFFER` as its target.
+            /// </summary>
             [JsonProperty("bufferView")]
             public Index<BufferView> BufferView { get; set; }
-
+            /// <summary>
+            /// The offset relative to the start of the parent `BufferView` in bytes.
+            /// </summary>
             [JsonProperty("byteOffset")]
             public int ByteOffset { get; set; }
-
+            /// <summary>
+            /// The data type of each index.
+            /// </summary>
             [JsonProperty("componentType")]
             public CheckedValue<ComponentType, int> ComponentType { get; set; }
         }

@@ -6,9 +6,16 @@ using NetGltf.Json;
 
 namespace Obj2Gltf
 {
-    // https://github.com/mapbox/earcut
+    /// <summary>
+    /// mapbox's earcut algorithm to split polygon to mesh, see: https://github.com/mapbox/earcut
+    /// </summary>
     public class EarCut
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> Triangulate(IList<float> data)
         {
             var dim = 2;
@@ -99,7 +106,8 @@ namespace Obj2Gltf
             }
             return last;
         }
-        private static void EarCutLinked(Node ear, List<int> triangles, int dim, float minX, float minY, float invSize, int pass)
+        private static void EarCutLinked(Node ear, List<int> triangles,
+            int dim, float minX, float minY, float invSize, int pass)
         {
             if (ear == null) return;
 
@@ -176,7 +184,8 @@ namespace Obj2Gltf
             return false;
         }
 
-        private static void SplitEarCut(Node start, List<int> triangles, int dim, float minX, float minY, float invSize)
+        private static void SplitEarCut(Node start, List<int> triangles,
+            int dim, float minX, float minY, float invSize)
         {
             var a = start;
             do
@@ -247,10 +256,10 @@ namespace Obj2Gltf
         private static Node SortLinked(Node list)
         {
             var inSize = 1;
-            int numMerges = 0;
+            int numMerges;
             int pSize = 0;
             int qSize = 0;
-            Node p = null, q = null, tail = null, e = null;
+            Node q = null, p, tail, e;
             do
             {
                 p = list;

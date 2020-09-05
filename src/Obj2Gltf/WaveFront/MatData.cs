@@ -4,8 +4,14 @@ using System.Text;
 
 namespace Obj2Gltf.WaveFront
 {
+    /// <summary>
+    /// represents a mtl file model
+    /// </summary>
     public class MtlModel
     {
+        /// <summary>
+        ///  material list
+        /// </summary>
         public Dictionary<string, Material> Materials { get; } = new Dictionary<string, Material>();
     }
     /// <summary>
@@ -75,61 +81,125 @@ namespace Obj2Gltf.WaveFront
         public string BumpMap { get; set; }
 
     }
-
+    /// <summary>
+    /// color in mtl
+    /// </summary>
     public abstract class MtlColor
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public abstract ColorType ColorType { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public abstract float[] ToRGB();
     }
-
+    /// <summary>
+    /// mtl color type
+    /// </summary>
     public enum ColorType
     {
+        /// <summary>
+        /// 
+        /// </summary>
         RGB,
+        /// <summary>
+        /// CIEXYZ
+        /// </summary>
         XYZ,
+        /// <summary>
+        /// specifies colory using a spectral curve
+        /// </summary>
         Spectral
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class ColorRgb : MtlColor
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="r"></param>
         public ColorRgb(float r) : this(r, r, r) { }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
         public ColorRgb(float r, float g, float b)
         {
             R = r;
             G = g;
             B = b;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public override ColorType ColorType => ColorType.RGB;
-
+        /// <summary>
+        /// to rgb value array (0~1)
+        /// </summary>
+        /// <returns></returns>
         public override float[] ToRGB()
         {
             return new[] { R, G, B };
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public float R { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public float G { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public float B { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{R} {G} {B}";
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class ColorXyz : MtlColor
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
         public ColorXyz(float x) : this(x, x, x) { }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
         public ColorXyz(float x, float y, float z)
         {
             X = x;
             Y = y;
             Z = z;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public override ColorType ColorType => ColorType.XYZ;
 
-        // https://stackoverflow.com/questions/43494018/converting-xyz-color-to-rgb
+        /// <summary>
+        /// https://stackoverflow.com/questions/43494018/converting-xyz-color-to-rgb
+        /// </summary>
+        /// <returns></returns>
         public override float[] ToRGB()
         {
             var r = 3.2404542f * X - 1.5371385f * Y - 0.4985314f * Z;
@@ -137,37 +207,73 @@ namespace Obj2Gltf.WaveFront
             var b = 0.0556434f * X - 0.2040259f * Y + 1.0572252f * Z;
             return new[] { r, g, b };
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public float X { get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Y { get; }
+        /// <summary>
+        /// 
+        /// </summary>
         public float Z { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"xyz {X} {Y} {Z}";
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class ColorSpectral : MtlColor
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rfl"></param>
         public ColorSpectral(string rfl) : this(rfl, 1.0f) { }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rfl"></param>
+        /// <param name="factor"></param>
         public ColorSpectral(string rfl, float factor)
         {
             RflFile = rfl;
             Factor = factor;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public override ColorType ColorType => ColorType.Spectral;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override float[] ToRGB()
         {
             // https://mathematica.stackexchange.com/questions/57389/convert-spectral-distribution-to-rgb-color
             //TODO:
             return new[] { 0.315f, 0.315f, 0.315f };
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public string RflFile { get; }
+        /// <summary>
+        /// a multiplier for the values in the .rfl file and defaults to 1.0, if not specified
+        /// </summary>
         public float Factor { get; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"spectral {RflFile} {Factor}";

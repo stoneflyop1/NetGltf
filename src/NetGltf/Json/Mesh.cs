@@ -3,6 +3,12 @@ using Newtonsoft.Json;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// A set of primitives to be rendered.
+    ///
+    /// A node can contain one or more meshes and its transform places the meshes in
+    /// the scene.
+    /// </summary>
     public class Mesh
     {
         /// <summary>
@@ -22,9 +28,11 @@ namespace NetGltf.Json
         [JsonProperty("weights")]
         public double[] Weights { get; set; }
     }
+    /// <summary>
+    /// Geometry to be rendered with the given material.
+    /// </summary>
     public class Primitive
     {
-
         /// <summary>
         /// Maps attribute semantic names to the `Accessor`s containing the corresponding attribute data.
         /// </summary>
@@ -45,11 +53,17 @@ namespace NetGltf.Json
         /// </summary>
         [JsonProperty("mode")]
         public CheckedValue<Mode,int>? Mode { get; set; }
-
+        /// <summary>
+        /// An array of Morph Targets, each  Morph Target is a dictionary mapping
+        /// attributes (only `POSITION`, `NORMAL`, and `TANGENT` supported) to their
+        /// deviations in the Morph Target.
+        /// </summary>
         [JsonProperty("targets")]
         public List<MorphTarget> Targets { get; set; }
     }
-
+    /// <summary>
+    /// A dictionary mapping attributes to their deviations in the Morph Target.
+    /// </summary>
     public class MorphTarget
     {
         /// <summary>
@@ -95,7 +109,9 @@ namespace NetGltf.Json
         /// Corresponds to `GL_TRIANGLE_FAN`.
         TriangleFan,
     }
-
+    /// <summary>
+    /// Vertex attribute semantic name.
+    /// </summary>
     public enum Semantic
     {
         ///<summary>XYZ vertex positions</summary>

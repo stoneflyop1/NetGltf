@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
+#pragma warning disable 1591
+
 namespace NetGltf.Json
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace NetGltf.Json
     public class Model
     {
         /// <summary>
-        /// Gltf filepath
+        /// read glTF filepath
         /// </summary>
         [JsonIgnore]
         public string Uri {get;set;}
@@ -63,12 +65,14 @@ namespace NetGltf.Json
         public List<string> ExtensionsUsed {get;set;}
         [JsonProperty("extensionsRequired")]
         public List<string> ExtensionsRequired {get;set;}
-
+        /// <summary>
+        /// bin buffers for writing glb file
+        /// </summary>
         [JsonIgnore]
         public List<byte> BinBuffers { get; set; }
     }
 
-    public static class ModelExtensions
+    internal static class ModelExtensions
     {
         private static bool IsFileUri(string url)
         {
@@ -108,7 +112,7 @@ namespace NetGltf.Json
             return true;
         }
 
-        public static void WriteUriFiles(this Model model, string newFilePath)
+        internal static void WriteUriFiles(this Model model, string newFilePath)
         {
             if (String.IsNullOrEmpty(newFilePath)) return;
             var files = GetFileUris(model);

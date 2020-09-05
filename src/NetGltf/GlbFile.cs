@@ -6,14 +6,28 @@ using NetGltf.Json;
 
 namespace NetGltf
 {
+    /// <summary>
+    /// glb file
+    /// </summary>
     public class GlbFile
     {
+        /// <summary>
+        /// glb header
+        /// </summary>
         public GlbHeader Header {get;set;}
-
+        /// <summary>
+        /// json buffer
+        /// </summary>
         public byte[] Json {get;set;}
-
+        /// <summary>
+        /// bin buffer
+        /// </summary>
         public byte[] Bin {get;set;}
-
+        /// <summary>
+        /// parse from stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public static GltfResult<GlbFile> Parse(Stream stream)
         {
             using(var br = new BinaryReader(stream))
@@ -66,9 +80,16 @@ namespace NetGltf
             }
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public static class GltfFileExtensions
     {
+        /// <summary>
+        /// to glTF model
+        /// </summary>
+        /// <param name="glb"></param>
+        /// <returns></returns>
         public static Model ToGltf(this GlbFile glb)
         {
             if (glb == null) throw new ArgumentNullException(nameof(glb));
@@ -83,10 +104,20 @@ namespace NetGltf
             return model;
         }
     }
-
+    /// <summary>
+    /// GLB Header
+    /// </summary>
     public class GlbHeader
     {
-        public static int ByteCount { get; } = 12;
+        /// <summary>
+        /// Header ByteCount
+        /// </summary>
+        public const int ByteCount = 12;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="len">buffer length</param>
+        /// <returns></returns>
         public static GlbHeader GetGlbHeader(uint len)
         {
             return new GlbHeader
@@ -96,10 +127,17 @@ namespace NetGltf
                 Length = len
             };
         }
+        /// <summary>
+        /// glTF magic number
+        /// </summary>
         public uint Magic {get;set;}
-
+        /// <summary>
+        /// glTF version
+        /// </summary>
         public uint Version {get;set;}
-
+        /// <summary>
+        /// buffer length
+        /// </summary>
         public uint Length {get;set;}
 
         internal void Write(BinaryWriter bw)
@@ -137,11 +175,18 @@ namespace NetGltf
                 return Result.Ok(header);
         }
     }
-
+    /// <summary>
+    /// glb chunk header
+    /// </summary>
     public class ChunkHeader
     {
+        /// <summary>
+        /// chunk length
+        /// </summary>
         public uint Length {get;set;}
-
+        /// <summary>
+        /// chunk type, json/bin
+        /// </summary>
         public ChunkType ChunkType {get;set;}
 
         internal void Write(BinaryWriter bw)
@@ -168,23 +213,44 @@ namespace NetGltf
             }
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public enum ChunkType : uint
     {
+        /// <summary>
+        /// glTF json
+        /// </summary>
         Json = GlbConsts.JsonType,
+        /// <summary>
+        /// binary data, link vertices/normals/uvs/images
+        /// </summary>
         Bin = GlbConsts.BinType
     }
-
+    /// <summary>
+    /// glb consts
+    /// </summary>
     public static class GlbConsts
     {
+        /// <summary>
+        /// magic number
+        /// </summary>
         public const uint Magic = 0x46546C67;
-
+        /// <summary>
+        /// glTF version
+        /// </summary>
         public const uint Version = 2;
-
+        /// <summary>
+        /// GLB Header byte length
+        /// </summary>
         public const uint HeaderLength = 12;
-
+        /// <summary>
+        ///  json type emum
+        /// </summary>
         public const uint JsonType = 0x4E4F534A;
-
+        /// <summary>
+        /// bin type enum
+        /// </summary>
         public const uint BinType = 0x004E4942;
     }
 }

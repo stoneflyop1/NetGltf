@@ -6,6 +6,9 @@ using Obj2Gltf.WaveFront;
 
 namespace Obj2Gltf
 {
+    /// <summary>
+    /// parse mtl file
+    /// </summary>
     public class MtlParser
     {
         private static MtlColor ParseColor(IList<string> args)
@@ -58,6 +61,12 @@ namespace Obj2Gltf
             }
             return args[0];
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="encoding">default utf-8</param>
+        /// <returns></returns>
         public static MtlModel Parse(string inputFile, Encoding encoding = null)
         {
             encoding = encoding ?? TextParser.DefaultEncoding;

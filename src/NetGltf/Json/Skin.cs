@@ -3,9 +3,14 @@ using Newtonsoft.Json;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// Joints and matrices defining a skin.
+    /// </summary>
     public class Skin
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
         /// <summary>

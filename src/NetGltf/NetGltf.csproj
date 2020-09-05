@@ -2,11 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NetGltf2</PackageId>
+    <Product>NetGltf2</Product>
+    <Authors>Jifeng</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/stoneflyop1/NetGltf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/stoneflyop1/NetGltf</RepositoryUrl>
+    <PackageTags>glTF</PackageTags>
+    <Description>a dotnet tool parsing glTF'glb file</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\NetGltf.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\NetGltf.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NewtonSoft.Json" Version="12.0.3" />
+    <PackageReference Include="NewtonSoft.Json" Version="12.0.1" />
   </ItemGroup>
 
 </Project>

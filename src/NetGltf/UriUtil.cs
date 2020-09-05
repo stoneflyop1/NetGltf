@@ -2,6 +2,9 @@ using System;
 using System.IO;
 
 namespace NetGltf {
+    /// <summary>
+    /// 
+    /// </summary>
     public class UriUtil
     {
         private static readonly bool _isWin;
@@ -17,7 +20,11 @@ namespace NetGltf {
         {
             return _isWin;
         }
-
+        /// <summary>
+        /// test whether uri is valid
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public static bool IsValidUri(string uri)
         {
             if (String.IsNullOrEmpty(uri))
@@ -44,7 +51,11 @@ namespace NetGltf {
                 return false;
             }
         }
-
+        /// <summary>
+        /// add scheme to uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public static string Normalize(string uri)
         {
             if (String.IsNullOrEmpty(uri)) return uri;
@@ -58,7 +69,12 @@ namespace NetGltf {
             var fullPath = Path.GetFullPath(uri).TrimStart('/').TrimEnd('/');
             return $"file:///{fullPath.Replace('\\','/')}";
         }
-
+        /// <summary>
+        /// combine two path, with slash
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="relativePath"></param>
+        /// <returns></returns>
         public static string Combine(string root, string relativePath)
         {
             if (String.IsNullOrEmpty(relativePath))

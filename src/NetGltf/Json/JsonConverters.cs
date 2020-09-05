@@ -15,6 +15,12 @@ namespace NetGltf.Json {
         {
             return (t.Name == ListType.Name && t.Namespace == ListType.Namespace);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="memberSerialization"></param>
+        /// <returns></returns>
         protected override JsonProperty CreateProperty(
             System.Reflection.MemberInfo member,
             Newtonsoft.Json.MemberSerialization memberSerialization)
@@ -39,16 +45,30 @@ namespace NetGltf.Json {
             return jProp;
         }
     }
-
+    /// <summary>
+    /// value index json converter
+    /// </summary>
     public class IndexConverter : JsonConverter
     {
         private static readonly Type indexType = typeof(Index<>);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
         public override bool CanConvert(Type objectType)
         {
             return objectType.Name == indexType.Name &&
                 objectType.Namespace == indexType.Namespace;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="objectType"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="serializer"></param>
+        /// <returns></returns>
         public override object ReadJson(JsonReader reader, Type objectType, 
             object existingValue, JsonSerializer serializer)
         {
@@ -71,7 +91,12 @@ namespace NetGltf.Json {
 
             return existingValue;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="serializer"></param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value != null)
@@ -83,7 +108,9 @@ namespace NetGltf.Json {
             }
         }
     }
-
+    /// <summary>
+    /// checked enum converter
+    /// </summary>
     public class CheckedEnumConverter : JsonConverter
     {
         private static readonly Type CheckType = typeof(CheckedValue<,>);
@@ -111,6 +138,11 @@ namespace NetGltf.Json {
             return objectType.Name == CheckType.Name &&
                 objectType.Namespace == CheckType.Namespace;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
         public override bool CanConvert(Type objectType)
         {
             if(IsCheckType(objectType)) {
@@ -119,7 +151,14 @@ namespace NetGltf.Json {
             var t = GetCheckType(objectType);
             return t != null;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="objectType"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="serializer"></param>
+        /// <returns></returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var rawVal = reader.Value;
@@ -135,7 +174,12 @@ namespace NetGltf.Json {
                 return Activator.CreateInstance(t, rawVal);
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="serializer"></param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value != null)
@@ -164,6 +208,15 @@ namespace NetGltf.Json {
     /// </summary>
     public class FloatArrayJsonConverter : JsonConverter<float[]>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="objectType"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="hasExistingValue"></param>
+        /// <param name="serializer"></param>
+        /// <returns></returns>
         public override float[] ReadJson(JsonReader reader, Type objectType,
             float[] existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
@@ -179,7 +232,12 @@ namespace NetGltf.Json {
             }
             return existingValue;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="serializer"></param>
         public override void WriteJson(JsonWriter writer, float[] value,
             JsonSerializer serializer)
         {

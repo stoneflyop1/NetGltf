@@ -5,15 +5,25 @@ using System.Linq;
 
 namespace NetGltf
 {
+    /// <summary>
+    /// custom glTF exception
+    /// </summary>
     public class GltfException : Exception
     {
         private readonly List<GltfError> _errors;
-
+        /// <summary>
+        /// from errors
+        /// </summary>
+        /// <param name="errors"></param>
         public GltfException(IEnumerable<GltfError> errors):this(errors, null)
         {
 
         }
-
+        /// <summary>
+        /// from errors with inner
+        /// </summary>
+        /// <param name="errors"></param>
+        /// <param name="inner"></param>
         public GltfException(IEnumerable<GltfError> errors, Exception inner)
             : base(null, inner)
         {
@@ -33,15 +43,13 @@ namespace NetGltf
         }
 
         private readonly string _mess;
-
-        public override string Message
-        {
-            get 
-            {
-                return _mess;
-            }
-        }
-
+        /// <summary>
+        /// error message
+        /// </summary>
+        public override string Message => _mess;
+        /// <summary>
+        /// file errors
+        /// </summary>
         public IReadOnlyCollection<GltfError> Errors
         {
             get
@@ -50,14 +58,23 @@ namespace NetGltf
             }
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class GltfError
     {
+        /// <summary>
+        /// Error Kind
+        /// </summary>
         public ErrorKind Kind {get;set;}
-
+        /// <summary>
+        /// error message
+        /// </summary>
         public string Message {get;set;}
     }
-
+    /// <summary>
+    /// gltf error kind
+    /// </summary>
     public enum ErrorKind
     {
         /// <summary> glTF validation error. </summary>

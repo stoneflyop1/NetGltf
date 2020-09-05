@@ -3,11 +3,21 @@ using Newtonsoft.Json.Converters;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// The material appearance of a primitive.
+    /// </summary>
     public class Material
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
+        /// <summary>
+        /// A set of parameter values that are used to define the metallic-roughness
+        /// material model from Physically-Based Rendering (PBR) methodology. When not
+        /// specified, all the default values of `pbrMetallicRoughness` apply.
+        /// </summary>
 
         [JsonProperty("pbrMetallicRoughness")]
         public PbrMetallicRoughness PbrMetallicRoughness { get; set; }
@@ -82,7 +92,10 @@ namespace NetGltf.Json
         [JsonProperty("doubleSided")]
         public bool DoubleSided { get; set; }
     }
-
+    /// <summary>
+    /// A set of parameter values that are used to define the metallic-roughness
+    /// material model from Physically-Based Rendering (PBR) methodology.
+    /// </summary>
     public class PbrMetallicRoughness
     {
         /// <summary>
@@ -90,10 +103,21 @@ namespace NetGltf.Json
         /// </summary>
         [JsonProperty("baseColorFactor")]
         public float[] BaseColorFactor { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty("baseColorTexture")]
         public TextureInfo BaseColorTexture { get; set; }
-
+        /// <summary>
+        /// The metallic-roughness texture.
+        ///
+        /// This texture has two components:
+        ///
+        /// The metalness values are sampled from the B channel.
+        /// The roughness values are sampled from the G channel.
+        /// These values are linear. If other channels are present (R or A),
+        /// they are ignored for metallic-roughness calculations.
+        /// </summary>
         [JsonProperty("metallicRoughnessTexture")]
         public TextureInfo MetallicRoughnessTexture { get; set; }
 
@@ -129,23 +153,47 @@ namespace NetGltf.Json
         /// the alpha value and the specified alpha cutoff value.
         BLEND,
     }
-
+    /// <summary>
+    /// Defines the normal texture of a material.
+    /// </summary>
     public class NormalTexture 
     {
+        /// <summary>
+        /// The index of the texture.
+        /// </summary>
         [JsonProperty("index")]
         public Index<Texture> Index {get;set;}
+        /// <summary>
+        /// The scalar multiplier applied to each normal vector of the texture.
+        ///
+        /// This value is ignored if normalTexture is not specified.
+        /// </summary>
         [JsonProperty("scale")]
         public float Scale {get;set;}
+        /// <summary>
+        /// The set index of the texture's `TEXCOORD` attribute.
+        /// </summary>
         [JsonProperty("texCoord")]
         public int TexCoord {get;set;}
     }
-
+    /// <summary>
+    /// Defines the occlusion texture of a material.
+    /// </summary>
     public class OcclusionTexture
     {
+        /// <summary>
+        /// The index of the texture.
+        /// </summary>
         [JsonProperty("index")]
         public Index<Texture> Index {get;set;}
+        /// <summary>
+        /// The scalar multiplier controlling the amount of occlusion applied.
+        /// </summary>
         [JsonProperty("strength")]
         public float StrengthFactor {get;set;}
+        /// <summary>
+        /// The set index of the texture's `TEXCOORD` attribute.
+        /// </summary>
         [JsonProperty("texCoord")]
         public int TexCoord {get;set;}
     }

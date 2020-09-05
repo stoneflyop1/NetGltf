@@ -54,7 +54,10 @@ namespace Obj2Gltf.WaveFront
         /// usemtl
         /// </summary>
         public Dictionary<string, Group> Meshes { get; internal set; }
-
+        /// <summary>
+        /// get objects or groups which has more elements
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, Group> GetGroups()
         {
             var gCount = 0;
@@ -70,7 +73,9 @@ namespace Obj2Gltf.WaveFront
             }
             return Objects;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Counter CurrentCounter
         {
             get
@@ -79,7 +84,7 @@ namespace Obj2Gltf.WaveFront
             }
         }
 
-        public GroupBuilder GetMapBuilder(string input)
+        internal GroupBuilder GetMapBuilder(string input)
         {
             var builder = new GroupBuilder(this);
             builder.Start(input);
@@ -87,17 +92,34 @@ namespace Obj2Gltf.WaveFront
             return builder;
         }
     }
-
+    /// <summary>
+    /// primitive counter
+    /// </summary>
     public struct Counter
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pntCount"></param>
+        /// <param name="lineCount"></param>
+        /// <param name="polyCount"></param>
         public Counter(uint pntCount, uint lineCount, uint polyCount)
         {
             PntCount = pntCount;
             LineCount = lineCount;
             PolyCount = polyCount;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public uint PntCount;
+        /// <summary>
+        /// 
+        /// </summary>
         public uint LineCount;
+        /// <summary>
+        /// 
+        /// </summary>
         public uint PolyCount;
     }
 }

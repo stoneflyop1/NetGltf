@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+#pragma warning disable 1591
+
 namespace Obj2Gltf.WaveFront
 {
-    /// <summary>
-    /// represent vertex data
-    /// </summary>
     public struct Point
     {
         public Point(float x, float y, float z) : this(x, y, z, null) { }

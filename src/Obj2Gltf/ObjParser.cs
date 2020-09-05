@@ -8,7 +8,7 @@ using System.Runtime.InteropServices.ComTypes;
 
 namespace Obj2Gltf
 {
-    public class GroupBuilder
+    internal class GroupBuilder
     {
         public GroupBuilder(ObjModel model)
         {
@@ -58,8 +58,17 @@ namespace Obj2Gltf
             Current = null;
         }
     }
+    /// <summary>
+    /// parse obj file
+    /// </summary>
     public class ObjParser
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="encoding">default utf-8</param>
+        /// <returns></returns>
         public static ObjModel Parse(string inputFile, Encoding encoding = null)
         {
             encoding = encoding ?? TextParser.DefaultEncoding;

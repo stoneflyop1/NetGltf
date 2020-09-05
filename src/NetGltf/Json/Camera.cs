@@ -3,6 +3,12 @@ using Newtonsoft.Json.Converters;
 
 namespace NetGltf.Json
 {
+    /// <summary>
+    /// A camera's projection.
+    ///
+    /// A node can reference a camera to apply a transform to place the camera in the
+    /// scene.
+    /// </summary>
     public class Camera
     {
         /// <summary>
@@ -15,7 +21,6 @@ namespace NetGltf.Json
         /// Specifies if the camera uses a perspective or orthographic projection.
         /// </summary>
         [JsonProperty("type")]
-        //[JsonConverter(typeof(StringEnumConverter), true)]
         public CheckedValue<CameraType,string> CameraType {get;set;}
 
         /// <summary>
@@ -30,16 +35,19 @@ namespace NetGltf.Json
         [JsonProperty("perspective")]
         public Perspective Perspective {get;set;}
     }
-
+    /// <summary>
+    /// https://bytefish.de/blog/enums_json_net/
+    /// </summary>
     public enum CameraType
     {
-        // https://bytefish.de/blog/enums_json_net/
         /// <summary>A perspective projection.</summary>
         Perspective,
         /// <summary>A orthographic projection.</summary>
         Orthographic
     }
-
+    /// <summary>
+    /// Values for an orthographic camera.
+    /// </summary>
     public class Orthographic
     {
         /// <summary>
@@ -64,7 +72,9 @@ namespace NetGltf.Json
         [JsonProperty("znear")]
         public float Znear {get;set;}
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class Perspective
     {
         /// <summary>

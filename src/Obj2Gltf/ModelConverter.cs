@@ -10,6 +10,9 @@ using NetGltf;
 
 namespace Obj2Gltf
 {
+    /// <summary>
+    /// convert obj file to glTF/glb
+    /// </summary>
     public class ModelConverter
     {
         private readonly string _objFile;
@@ -21,16 +24,32 @@ namespace Obj2Gltf
         private readonly Dictionary<string, string> _gltfTextureDict = new Dictionary<string, string>();
         private readonly Dictionary<string, int> _matDict = new Dictionary<string, int>();
         private readonly Buffers _buffers = new Buffers();
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objFile">obj filepath</param>
+        /// <param name="gltfFile">output gltf filpath</param>
+        /// <param name="options"></param>
         public ModelConverter(string objFile, string gltfFile, ConverterOptions options)
         {
             _objFile = objFile;
             _objFolder = Path.GetDirectoryName(_objFile);
-            _gltfFile = gltfFile;
             _gltfFolder = Path.GetDirectoryName(gltfFile);
             _options = options ?? new ConverterOptions();
+            if (options.GLB)
+            {
+                var ext = Path.GetExtension(gltfFile).TrimStart('.').ToUpper();
+                if (ext != "GLB")
+                {
+                    gltfFile = Path.ChangeExtension(gltfFile, "glb");
+                }
+            }
+            _gltfFile = gltfFile;
         }
-
+        /// <summary>
+        /// run converter
+        /// </summary>
+        /// <returns></returns>
         public Model Run()
         {
             var model = new Model { Asset = new Asset() };

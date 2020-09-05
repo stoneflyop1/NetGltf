@@ -5,6 +5,9 @@ using NetGltf.Json;
 
 namespace NetGltf
 {
+    /// <summary>
+    /// glTF document
+    /// </summary>
     public class Document
     {
         private readonly string _filePath;
@@ -15,12 +18,19 @@ namespace NetGltf
         {
             _filePath = filePath;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public static Document Create()
         {
             return new Document();
         }
-
+        /// <summary>
+        /// get from path
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static Document FromPath(string filePath)
         {
             if (filePath == null)
@@ -30,9 +40,16 @@ namespace NetGltf
             }
             return new Document(filePath);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public GltfResult<Model> Parse()
         {
+            if (String.IsNullOrEmpty(_filePath) || File.Exists(_filePath))
+            {
+                throw new ArgumentException("no filePath or file not found", "filePath");
+            }
             try
             {
                 var model = JsonUtil.Deserialize<Model>(_filePath);
@@ -44,7 +61,11 @@ namespace NetGltf
                 return Result.Error<Model>(ex);
             }
         }
-
+        /// <summary>
+        /// padding string data for boundaries
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="boundarySize"></param>
         public static void PaddingSpace(List<byte> buffer, int boundarySize)
         {
             var count = buffer.Count;
@@ -58,6 +79,11 @@ namespace NetGltf
                 }
             }
         }
+        /// <summary>
+        /// padding binary data for boundaries
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="boundarySize"></param>
         public static void Padding(List<byte> buffer, int boundarySize)
         {
             var count = buffer.Count;
@@ -71,7 +97,11 @@ namespace NetGltf
                 }
             }
         }
-
+        /// <summary>
+        /// write model to filePath
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="filePath"></param>
         public void WriteModel(Model model, string filePath)
         {
             if (UriUtil.IsValidUri(model.Uri))
