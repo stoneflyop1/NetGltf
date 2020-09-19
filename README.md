@@ -1,9 +1,12 @@
 # NetGltf
 
-dotnet gltf tools and obj2gltf tool
+## glTF tool
 
+loading and validating glTF json file.
 
-![gltf json Structure](https://raw.githubusercontent.com/KhronosGroup/glTF-Tutorials/master/gltfTutorial/images/gltfJsonStructure.png)
+## Obj2Gltf
+
+convert wavefront obj file to glTF file.
 
 
 ## Reference
