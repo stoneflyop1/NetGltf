@@ -27,9 +27,11 @@ namespace Obj2Gltf.Tests
         {
             var objFile = Path.Combine(LoaderTests.SampleRootPath, "plants/indoor plant_02.obj");
             var gltfFile = EnsureOuputPath(objFile);
-            var options = new ConverterOptions();
-            options.SeparateBinary = true;
-            options.SeparateTextures = true;
+            var options = new ConverterOptions
+            {
+                SeparateBinary = true,
+                SeparateTextures = true
+            };
             var converter = new ModelConverter(objFile, gltfFile, options);
             var model = converter.Run();
             Assert.NotNull(model);
