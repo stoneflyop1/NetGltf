@@ -53,9 +53,23 @@ namespace Obj2Gltf.WaveFront
 
         public void Start(Counter counter)
         {
-            Points.Add(new Range(counter.PntCount));
-            Lines.Add(new Range(counter.LineCount));
-            Polygons.Add(new Range(counter.PolyCount));
+            AddOrInsertRange(Points, counter.PntCount);
+            AddOrInsertRange(Lines, counter.LineCount);
+            AddOrInsertRange(Polygons, counter.PolyCount);
+        }
+
+        private void AddOrInsertRange(List<Range> r, uint start)
+        {
+            // Points.Add(new Range(counter.PntCount));
+            if (r.Count > 0)
+            {
+                if (r[r.Count - 1].End == Range.Invalid)
+                {
+                    r[r.Count - 1] = new Range(r[r.Count - 1].Start, start);
+                    return;
+                }
+            }
+            r.Add(new Range(start));
         }
 
         public bool End(Counter counter)
@@ -69,8 +83,15 @@ namespace Obj2Gltf.WaveFront
 
         private static void EndList(List<Range> ranges, uint end)
         {
+            if (ranges.Count == 0 && end == 0)
+            {
+                return;
+            }
             var last = ranges[ranges.Count - 1];
-            Trace.Assert(last.End == Range.Invalid);
+            if(last.End != Range.Invalid)
+            {
+                return;
+            }
             if (last.Start != end)
             {
                 last.End = end;
