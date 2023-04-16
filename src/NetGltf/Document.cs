@@ -46,7 +46,7 @@ namespace NetGltf
         /// <returns></returns>
         public GltfResult<Model> Parse()
         {
-            if (String.IsNullOrEmpty(_filePath) || File.Exists(_filePath))
+            if (String.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
             {
                 throw new ArgumentException("no filePath or file not found", "filePath");
             }

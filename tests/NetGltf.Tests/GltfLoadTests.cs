@@ -10,7 +10,7 @@ namespace NetGltf.Tests
     public class GltfLoadTests
     {
         /// <summary>
-        /// relative to bin/Debug/netcoreapp2.2
+        /// relative to bin/Debug/netcoreapp3.1
         /// </summary>
         internal static readonly string SampleRootPath = @"../../../../../gltfsamples";
 
@@ -58,8 +58,7 @@ namespace NetGltf.Tests
         [Fact]
         public void LoadDoc_Test2()
         {
-            var rootPath = Path.GetFullPath(SampleRootPath);
-            var gltfFile = Path.Combine(rootPath, "sepbins/CesiumMan/CesiumMan.gltf");
+            var gltfFile = Path.GetFullPath(Path.Combine(SampleRootPath, "sepbins/CesiumMan/CesiumMan.gltf"));
             var doc = Document.FromPath(gltfFile);
             var res = doc.Parse();
             Assert.NotNull(res.Data);

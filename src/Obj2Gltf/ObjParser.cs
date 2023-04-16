@@ -37,9 +37,11 @@ namespace Obj2Gltf
             if (Result.TryGetValue(input, out var group))
             {
                 group.Start(count);
-                return;
             }
-            Result.Add(input, Group.Create(count));
+            else
+            {
+                Result.Add(input, Group.Create(count));
+            }
             Current = input;
         }
 
@@ -124,7 +126,7 @@ namespace Obj2Gltf
                             args = TextParser.ParseArgs(args);
                             groupBuilder.Start(args[0]);
                             break;
-                            case "o":
+                        case "o":
                             args = TextParser.ParseArgs(args);
                             objectBuilder.Start(args[0]);
                             if(String.IsNullOrEmpty(model.Name))
