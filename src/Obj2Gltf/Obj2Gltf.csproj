@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>Obj2Gltf2</PackageId>
     <Authors>Jifeng</Authors>
     <Company>Jifeng</Company>
@@ -11,14 +15,6 @@
     <RepositoryUrl>https://github.com/stoneflyop1/NetGltf</RepositoryUrl>
     <PackageProjectUrl>https://github.com/stoneflyop1/NetGltf</PackageProjectUrl>
     <Description>A dotnet tool that converting WaveFront Obj file to glTF/glb</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Obj2Gltf.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\Obj2Gltf.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
