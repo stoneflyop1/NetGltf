@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>NetGltf2</PackageId>
     <Product>NetGltf2</Product>
     <Authors>Jifeng</Authors>
@@ -10,14 +14,6 @@
     <RepositoryUrl>https://github.com/stoneflyop1/NetGltf</RepositoryUrl>
     <PackageTags>glTF</PackageTags>
     <Description>a dotnet tool parsing glTF'glb file</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\NetGltf.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\NetGltf.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
